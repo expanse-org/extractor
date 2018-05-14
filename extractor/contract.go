@@ -550,7 +550,7 @@ func (processor *AbiProcessor) handleCutoffMethod(input eventemitter.EventData) 
 
 func (processor *AbiProcessor) handleCutoffPairMethod(input eventemitter.EventData) error {
 	contract := input.(MethodData)
-	contractMethod := contract.Method.(*ethaccessor.CutoffPairMethod)
+	contractMethod := contract.Method.(*contract.CutoffPairMethod)
 
 	data := hexutil.MustDecode("0x" + contract.Input[10:])
 	if err := contract.CAbi.UnpackMethodInput(contractMethod, contract.Name, data); err != nil {
