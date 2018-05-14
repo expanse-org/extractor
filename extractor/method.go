@@ -23,7 +23,6 @@ import (
 	"github.com/Loopring/relay-lib/eth/abi"
 	"github.com/Loopring/relay-lib/eth/contract"
 	ethtyp "github.com/Loopring/relay-lib/eth/types"
-	"github.com/Loopring/relay-lib/eventemitter"
 	"github.com/Loopring/relay-lib/log"
 	"github.com/Loopring/relay-lib/types"
 	"github.com/ethereum/go-ethereum/common"
@@ -50,33 +49,25 @@ func newMethodData(method *abi.Method, cabi *abi.ABI) MethodData {
 	return c
 }
 
-func (method *MethodData) FullFilled(tx *ethtyp.Transaction, gasUsed, blockTime *big.Int, status types.TxStatus, methodName string) {
-	method.TxInfo = setTxInfo(tx, gasUsed, blockTime, methodName)
-	method.Input = tx.Input
-	method.TxLogIndex = 0
-	method.Status = status
-}
-
 // UnpackMethod v should be ptr
-func (m MethodData) handleMethod(tx *ethtyp.Transaction) error {
-	var (
-		event interface{}
-		err   error
-	)
-
-	switch m.Name {
-	case contract.METHOD_SUBMIT_RING:
-		event, err = m.fullFillSubmitRing()
+func (m MethodData) handleMethod(tx *ethtyp.Transaction, gasUsed, blockTime *big.Int, status types.TxStatus, methodName string) (err error) {
+	var event interface{}
+	if err = m.beforeUnpack(tx, gasUsed, blockTime, status, methodName); err != nil {
+		return
+	}
+	if event, err = m.afterUnpack(); err != nil {
+		return
 	}
 
-	if err != nil {
-		return err
-	}
-
-	return EmitEvent(m.EmitTopic(), event)
+	return Emit(m.Name, event)
 }
 
-func (m MethodData) beforeUnpack() (err error) {
+func (m MethodData) beforeUnpack(tx *ethtyp.Transaction, gasUsed, blockTime *big.Int, status types.TxStatus, methodName string) (err error) {
+	m.TxInfo = setTxInfo(tx, gasUsed, blockTime, methodName)
+	m.Input = tx.Input
+	m.TxLogIndex = 0
+	m.Status = status
+
 	switch m.Name {
 	case contract.METHOD_CANCEL_ORDER:
 		if m.DelegateAddress == types.NilAddress {
@@ -87,8 +78,26 @@ func (m MethodData) beforeUnpack() (err error) {
 	return err
 }
 
-func (m MethodData) afterUnpack() error {
-
+func (m MethodData) afterUnpack() (event interface{}, err error) {
+	switch m.Name {
+	case contract.METHOD_SUBMIT_RING:
+		event, err = m.fullFillSubmitRing()
+	case contract.METHOD_CANCEL_ORDER:
+		event, err = m.fullFillCancelOrder()
+	case contract.METHOD_CUTOFF_ALL:
+		event, err = m.fullFillCutoffAll()
+	case contract.METHOD_CUTOFF_PAIR:
+		event, err = m.fullFillCutoffPair()
+	case contract.METHOD_APPROVE:
+		event, err = m.fullFillApprove()
+	case contract.METHOD_TRANSFER:
+		event, err = m.fullFillTransfer()
+	case contract.METHOD_WETH_DEPOSIT:
+		event, err = m.fullFillDeposit()
+	case contract.METHOD_WETH_WITHDRAWAL:
+		event, err = m.fullFillWithdrawal()
+	}
+	return
 }
 
 func (m MethodData) unpack(tx *ethtyp.Transaction) (err error) {
@@ -154,7 +163,7 @@ func (m MethodData) fullFillCutoffAll() (event *types.CutoffEvent, err error) {
 	}
 
 	event = src.ConvertDown()
-	event.TxInfo = contract.TxInfo
+	event.TxInfo = m.TxInfo
 	event.Owner = event.From
 	log.Debugf("extractor,tx:%s cutoff method owner:%s, cutoff:%d, status:%d", event.TxHash.Hex(), event.Owner.Hex(), event.Cutoff.Int64(), event.Status)
 
@@ -169,7 +178,7 @@ func (m MethodData) fullFillCutoffPair() (event *types.CutoffPairEvent, err erro
 
 	event = src.ConvertDown()
 	event.TxInfo = m.TxInfo
-	event.Owner = cutoffpair.From
+	event.Owner = event.From
 
 	log.Debugf("extractor,tx:%s cutoffpair method owenr:%s, token1:%s, token2:%s, cutoff:%d", event.TxHash.Hex(), event.Owner.Hex(), event.Token1.Hex(), event.Token2.Hex(), event.Cutoff.Int64())
 
@@ -203,58 +212,27 @@ func (m MethodData) fullFillTransfer() (event *types.TransferEvent, err error) {
 	return
 }
 
-func (m MethodData) fullFillWethDeposit() (event *types.WethDepositEvent, err error) {
-	src := m.Method.(*contract.WethWithdrawalMethod)
-
+func (m MethodData) fullFillDeposit() (event *types.WethDepositEvent, err error) {
 	event.Dst = m.From
 	event.Amount = m.Value
 	event.TxInfo = m.TxInfo
 
-	log.Debugf("extractor,tx:%s wethDeposit method from:%s, to:%s, value:%s", event.TxHash.Hex(), deposit.From.Hex(), deposit.To.Hex(), deposit.Amount.String())
+	log.Debugf("extractor,tx:%s wethDeposit method from:%s, to:%s, value:%s", event.TxHash.Hex(), event.From.Hex(), event.To.Hex(), event.Amount.String())
 
 	return
 }
 
-func (m MethodData) fullFillWethWithdrawal() (event *types.WethWithdrawalEvent, err error) {
-	src := m.Method.(*contract.WethWithdrawalMethod)
+func (m MethodData) fullFillWithdrawal() (event *types.WethWithdrawalEvent, err error) {
+	src, ok := m.Method.(*contract.WethWithdrawalMethod)
+	if !ok {
+		return nil, fmt.Errorf("wethWithdrawal method inputs type error")
+	}
 
 	event = src.ConvertDown()
 	event.Src = m.From
 	event.TxInfo = m.TxInfo
 
-	log.Debugf("extractor,tx:%s wethWithdrawal method from:%s, to:%s, value:%s", contractData.TxHash.Hex(), withdrawal.From.Hex(), withdrawal.To.Hex(), withdrawal.Amount.String())
+	log.Debugf("extractor,tx:%s wethWithdrawal method from:%s, to:%s, value:%s", event.TxHash.Hex(), event.From.Hex(), event.To.Hex(), event.Amount.String())
 
 	return
-}
-
-func (m MethodData) EmitTopic() string {
-	var topic string
-
-	switch m.Name {
-	case contract.METHOD_SUBMIT_RING:
-		topic = eventemitter.Miner_SubmitRing_Method
-	case contract.METHOD_CANCEL_ORDER:
-		topic = eventemitter.CancelOrder
-	case contract.METHOD_CUTOFF_ALL:
-		topic = eventemitter.CutoffAll
-	case contract.METHOD_CUTOFF_PAIR:
-		topic = eventemitter.CutoffPair
-	case contract.METHOD_APPROVE:
-		topic = eventemitter.Approve
-	case contract.METHOD_TRANSFER:
-		topic = eventemitter.Transfer
-	case contract.METHOD_WETH_DEPOSIT:
-		topic = eventemitter.WethDeposit
-	}
-
-	return topic
-}
-
-func EmitEvent(topic string, event interface{}) error {
-	if topic == "" {
-		return fmt.Errorf("emit topic is empty")
-	}
-
-	eventemitter.Emit(topic, event)
-	return nil
 }
