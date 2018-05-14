@@ -16,7 +16,7 @@
 
 */
 
-package extractor_test
+package extractor
 
 import (
 	"github.com/Loopring/accessor/ethaccessor"

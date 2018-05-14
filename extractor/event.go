@@ -17,18 +17,3 @@
 */
 
 package extractor
-
-import (
-	"github.com/Loopring/relay-lib/eth/abi"
-	ethtyp "github.com/Loopring/relay-lib/eth/types"
-)
-
-// UnpackMethod v should be ptr
-func UnpackMethod(v interface{}, abi *abi.ABI, tx *ethtyp.Transaction) error {
-	abi.Unpack(v, tx.Input)
-}
-
-// UnpackEvent v should be ptr
-func UnpackEvent(v interface{}, log *ethtyp.Log) {
-
-}
