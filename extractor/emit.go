@@ -28,22 +28,68 @@ func getTopic(name string) string {
 	var topic string
 
 	switch name {
+	// methods
 	case contract.METHOD_SUBMIT_RING:
 		topic = eventemitter.Miner_SubmitRing_Method
+
 	case contract.METHOD_CANCEL_ORDER:
 		topic = eventemitter.CancelOrder
+
 	case contract.METHOD_CUTOFF_ALL:
 		topic = eventemitter.CutoffAll
+
 	case contract.METHOD_CUTOFF_PAIR:
 		topic = eventemitter.CutoffPair
+
 	case contract.METHOD_APPROVE:
 		topic = eventemitter.Approve
+
 	case contract.METHOD_TRANSFER:
 		topic = eventemitter.Transfer
+
 	case contract.METHOD_WETH_DEPOSIT:
 		topic = eventemitter.WethDeposit
+
 	case contract.METHOD_WETH_WITHDRAWAL:
 		topic = eventemitter.WethWithdrawal
+
+	// events
+	case contract.EVENT_RING_MINED:
+		topic = eventemitter.RingMined
+
+	case contract.EVENT_ORDER_CANCELLED:
+		topic = eventemitter.CancelOrder
+
+	case contract.EVENT_CUTOFF_ALL:
+		topic = eventemitter.CutoffAll
+
+	case contract.EVENT_CUTOFF_PAIR:
+		topic = eventemitter.CutoffPair
+
+	case contract.EVENT_TRANSFER:
+		topic = eventemitter.Transfer
+
+	case contract.EVENT_APPROVAL:
+		topic = eventemitter.Approve
+
+	case contract.EVENT_WETH_DEPOSIT:
+		topic = eventemitter.WethDeposit
+
+	case contract.EVENT_WETH_WITHDRAWAL:
+		topic = eventemitter.WethWithdrawal
+
+	case contract.EVENT_TOKEN_REGISTERED:
+		topic = eventemitter.TokenRegistered
+
+	case contract.EVENT_TOKEN_UNREGISTERED:
+		topic = eventemitter.TokenUnRegistered
+
+	case contract.EVENT_ADDRESS_AUTHORIZED:
+		topic = eventemitter.AddressAuthorized
+
+	case contract.EVENT_ADDRESS_DEAUTHORIZED:
+		topic = eventemitter.AddressAuthorized
+
 	default:
 		topic = ""
 	}
@@ -51,8 +97,7 @@ func getTopic(name string) string {
 	return topic
 }
 
-func Emit(name string, event interface{}) error {
-	topic := getTopic(name)
+func Emit(topic string, event interface{}) error {
 	if topic == "" {
 		return fmt.Errorf("emit topic is empty")
 	}

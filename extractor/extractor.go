@@ -301,7 +301,7 @@ func (l *ExtractorServiceImpl) ProcessEvent(tx *ethtyp.Transaction, receipt *eth
 
 		data := hexutil.MustDecode(evtLog.Data)
 		if nil != data && len(data) > 0 {
-			if err := event.CAbi.Unpack(event.Event, event.Name, data, abi.SEL_UNPACK_EVENT); nil != err {
+			if err := event.Abi.Unpack(event.Event, event.Name, data, abi.SEL_UNPACK_EVENT); nil != err {
 				log.Errorf("extractor,process event,tx:%s unpack event error:%s", tx.Hash, err.Error())
 				continue
 			}

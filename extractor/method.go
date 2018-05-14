@@ -36,7 +36,6 @@ type MethodData struct {
 	Abi    *abi.ABI
 	Id     string
 	Name   string
-	Input  string
 }
 
 func newMethodData(method *abi.Method, cabi *abi.ABI) MethodData {
@@ -55,6 +54,9 @@ func (m MethodData) handleMethod(tx *ethtyp.Transaction, gasUsed, blockTime *big
 	if err = m.beforeUnpack(tx, gasUsed, blockTime, status, methodName); err != nil {
 		return
 	}
+	if err = m.unpack(tx); err != nil {
+		return
+	}
 	if event, err = m.afterUnpack(); err != nil {
 		return
 	}
@@ -62,9 +64,9 @@ func (m MethodData) handleMethod(tx *ethtyp.Transaction, gasUsed, blockTime *big
 	return Emit(m.Name, event)
 }
 
+// beforeUnpack full fill method txinfo and set status...
 func (m MethodData) beforeUnpack(tx *ethtyp.Transaction, gasUsed, blockTime *big.Int, status types.TxStatus, methodName string) (err error) {
 	m.TxInfo = setTxInfo(tx, gasUsed, blockTime, methodName)
-	m.Input = tx.Input
 	m.TxLogIndex = 0
 	m.Status = status
 
@@ -78,6 +80,7 @@ func (m MethodData) beforeUnpack(tx *ethtyp.Transaction, gasUsed, blockTime *big
 	return err
 }
 
+// afterUnpack set special fields in internal event
 func (m MethodData) afterUnpack() (event interface{}, err error) {
 	switch m.Name {
 	case contract.METHOD_SUBMIT_RING:
@@ -109,7 +112,7 @@ func (m MethodData) unpack(tx *ethtyp.Transaction) (err error) {
 func (m MethodData) fullFillSubmitRing() (event *types.SubmitRingMethodEvent, err error) {
 	src, ok := m.Method.(*contract.SubmitRingMethodInputs)
 	if !ok {
-		return nil, fmt.Errorf("submitRing method inputs type error:%s", err.Error())
+		return nil, fmt.Errorf("submitRing method inputs type error")
 	}
 
 	if event, err = src.ConvertDown(); err != nil {
