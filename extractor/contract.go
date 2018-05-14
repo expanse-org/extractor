@@ -20,7 +20,6 @@ package extractor
 
 import (
 	"github.com/Loopring/accessor/ethaccessor"
-	"github.com/Loopring/relay-lib/eth/abi"
 	contract "github.com/Loopring/relay-lib/eth/contract"
 	ethtyp "github.com/Loopring/relay-lib/eth/types"
 	"github.com/Loopring/relay-lib/eventemitter"
@@ -29,7 +28,6 @@ import (
 	"github.com/Loopring/relay/dao"
 	"github.com/Loopring/relay/market/util"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
 	"math/big"
 )
 
@@ -210,25 +208,19 @@ func (processor *AbiProcessor) loadProtocolContract() {
 			continue
 		}
 
-		watcher := &eventemitter.Watcher{}
 		eventData := newEventData(&event, ethaccessor.ProtocolImplAbi())
 
 		switch eventData.Name {
 		case contract.EVENT_RING_MINED:
 			eventData.Event = &contract.RingMinedEvent{}
-			watcher = &eventemitter.Watcher{Concurrent: false, Handle: processor.handleRingMinedEvent}
 		case contract.EVENT_ORDER_CANCELLED:
 			eventData.Event = &contract.OrderCancelledEvent{}
-			watcher = &eventemitter.Watcher{Concurrent: false, Handle: processor.handleOrderCancelledEvent}
 		case contract.EVENT_CUTOFF_ALL:
 			eventData.Event = &contract.CutoffEvent{}
-			watcher = &eventemitter.Watcher{Concurrent: false, Handle: processor.handleCutoffEvent}
 		case contract.EVENT_CUTOFF_PAIR:
 			eventData.Event = &contract.CutoffPairEvent{}
-			watcher = &eventemitter.Watcher{Concurrent: false, Handle: processor.handleCutoffPairEvent}
 		}
 
-		eventemitter.On(eventData.Id.Hex(), watcher)
 		processor.events[eventData.Id] = eventData
 		log.Infof("extractor,contract event name:%s -> key:%s", eventData.Name, eventData.Id.Hex())
 	}
@@ -239,24 +231,18 @@ func (processor *AbiProcessor) loadProtocolContract() {
 		}
 
 		methodData := newMethodData(&method, ethaccessor.ProtocolImplAbi())
-		watcher := &eventemitter.Watcher{}
 
 		switch methodData.Name {
 		case contract.METHOD_SUBMIT_RING:
 			methodData.Method = &contract.SubmitRingMethodInputs{}
-			watcher = &eventemitter.Watcher{Concurrent: false, Handle: processor.handleSubmitRingMethod}
 		case contract.METHOD_CANCEL_ORDER:
 			methodData.Method = &contract.CancelOrderMethod{}
-			watcher = &eventemitter.Watcher{Concurrent: false, Handle: processor.handleCancelOrderMethod}
 		case contract.METHOD_CUTOFF_ALL:
 			methodData.Method = &contract.CutoffMethod{}
-			watcher = &eventemitter.Watcher{Concurrent: false, Handle: processor.handleCutoffMethod}
 		case contract.METHOD_CUTOFF_PAIR:
 			methodData.Method = &contract.CutoffPairMethod{}
-			watcher = &eventemitter.Watcher{Concurrent: false, Handle: processor.handleCutoffPairMethod}
 		}
 
-		eventemitter.On(methodData.Id, watcher)
 		processor.methods[methodData.Id] = methodData
 		log.Infof("extractor,contract method name:%s -> key:%s", methodData.Name, methodData.Id)
 	}
@@ -274,10 +260,8 @@ func (processor *AbiProcessor) loadErc20Contract() {
 		switch eventData.Name {
 		case contract.EVENT_TRANSFER:
 			eventData.Event = &contract.TransferEvent{}
-			watcher = &eventemitter.Watcher{Concurrent: false, Handle: processor.handleTransferEvent}
 		case contract.EVENT_APPROVAL:
 			eventData.Event = &contract.ApprovalEvent{}
-			watcher = &eventemitter.Watcher{Concurrent: false, Handle: processor.handleApprovalEvent}
 		}
 
 		eventemitter.On(eventData.Id.Hex(), watcher)
@@ -291,19 +275,15 @@ func (processor *AbiProcessor) loadErc20Contract() {
 			continue
 		}
 
-		watcher := &eventemitter.Watcher{}
 		methodData := newMethodData(&method, ethaccessor.Erc20Abi())
 
 		switch methodData.Name {
 		case contract.METHOD_TRANSFER:
 			methodData.Method = &contract.TransferMethod{}
-			watcher = &eventemitter.Watcher{Concurrent: false, Handle: processor.handleTransferMethod}
 		case contract.METHOD_APPROVE:
 			methodData.Method = &contract.ApproveMethod{}
-			watcher = &eventemitter.Watcher{Concurrent: false, Handle: processor.handleApproveMethod}
 		}
 
-		eventemitter.On(methodData.Id, watcher)
 		processor.methods[methodData.Id] = methodData
 		log.Infof("extractor,contract method name:%s -> key:%s", methodData.Name, methodData.Id)
 	}
@@ -315,19 +295,15 @@ func (processor *AbiProcessor) loadWethContract() {
 			continue
 		}
 
-		watcher := &eventemitter.Watcher{}
 		methodData := newMethodData(&method, ethaccessor.WethAbi())
 
 		switch methodData.Name {
 		case contract.METHOD_WETH_DEPOSIT:
 			// weth deposit without any inputs,use transaction.value as input
-			watcher = &eventemitter.Watcher{Concurrent: false, Handle: processor.handleWethDepositMethod}
 		case contract.METHOD_WETH_WITHDRAWAL:
 			methodData.Method = &contract.WethWithdrawalMethod{}
-			watcher = &eventemitter.Watcher{Concurrent: false, Handle: processor.handleWethWithdrawalMethod}
 		}
 
-		eventemitter.On(methodData.Id, watcher)
 		processor.methods[methodData.Id] = methodData
 		log.Infof("extractor,contract method name:%s -> key:%s", methodData.Name, methodData.Id)
 	}
@@ -337,19 +313,15 @@ func (processor *AbiProcessor) loadWethContract() {
 			continue
 		}
 
-		watcher := &eventemitter.Watcher{}
 		eventData := newEventData(&event, ethaccessor.WethAbi())
 
 		switch eventData.Name {
 		case contract.EVENT_WETH_DEPOSIT:
 			eventData.Event = &contract.WethDepositEvent{}
-			watcher = &eventemitter.Watcher{Concurrent: false, Handle: processor.handleWethDepositEvent}
 		case contract.EVENT_WETH_WITHDRAWAL:
 			eventData.Event = &contract.WethWithdrawalEvent{}
-			watcher = &eventemitter.Watcher{Concurrent: false, Handle: processor.handleWethWithdrawalEvent}
 		}
 
-		eventemitter.On(eventData.Id.Hex(), watcher)
 		processor.events[eventData.Id] = eventData
 		log.Infof("extractor,contract event name:%s -> key:%s", eventData.Name, eventData.Id.Hex())
 	}
@@ -361,19 +333,15 @@ func (processor *AbiProcessor) loadTokenRegisterContract() {
 			continue
 		}
 
-		watcher := &eventemitter.Watcher{}
 		eventData := newEventData(&event, ethaccessor.TokenRegistryAbi())
 
 		switch eventData.Name {
 		case contract.EVENT_TOKEN_REGISTERED:
 			eventData.Event = &contract.TokenRegisteredEvent{}
-			watcher = &eventemitter.Watcher{Concurrent: false, Handle: processor.handleTokenRegisteredEvent}
 		case contract.EVENT_TOKEN_UNREGISTERED:
 			eventData.Event = &contract.TokenUnRegisteredEvent{}
-			watcher = &eventemitter.Watcher{Concurrent: false, Handle: processor.handleTokenUnRegisteredEvent}
 		}
 
-		eventemitter.On(eventData.Id.Hex(), watcher)
 		processor.events[eventData.Id] = eventData
 		log.Infof("extractor,contract event name:%s -> key:%s", eventData.Name, eventData.Id.Hex())
 	}
@@ -385,24 +353,21 @@ func (processor *AbiProcessor) loadTokenTransferDelegateProtocol() {
 			continue
 		}
 
-		watcher := &eventemitter.Watcher{}
 		eventData := newEventData(&event, ethaccessor.DelegateAbi())
 
 		switch eventData.Name {
 		case contract.EVENT_ADDRESS_AUTHORIZED:
 			eventData.Event = &contract.AddressAuthorizedEvent{}
-			watcher = &eventemitter.Watcher{Concurrent: false, Handle: processor.handleAddressAuthorizedEvent}
 		case contract.EVENT_ADDRESS_DEAUTHORIZED:
 			eventData.Event = &contract.AddressDeAuthorizedEvent{}
-			watcher = &eventemitter.Watcher{Concurrent: false, Handle: processor.handleAddressDeAuthorizedEvent}
 		}
 
-		eventemitter.On(eventData.Id.Hex(), watcher)
 		processor.events[eventData.Id] = eventData
 		log.Infof("extractor,contract event name:%s -> key:%s", eventData.Name, eventData.Id.Hex())
 	}
 }
 
+/*
 func (processor *AbiProcessor) handleEthTransfer(tx *ethaccessor.Transaction, receipt *ethaccessor.TransactionReceipt, time *big.Int) error {
 	var dst types.TransferEvent
 
@@ -448,3 +413,4 @@ func (processor *AbiProcessor) getGasAndStatus(tx *ethaccessor.Transaction, rece
 
 	return gasUsed, status
 }
+*/
