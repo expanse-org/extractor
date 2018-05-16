@@ -87,7 +87,7 @@ func Topic(name string) string {
 		topic = kafka.AddressAuthorized
 
 	case contract.EVENT_ADDRESS_DEAUTHORIZED:
-		topic = kafka.AddressAuthorized
+		topic = kafka.AddressDeAuthorized
 
 	default:
 		topic = ""
