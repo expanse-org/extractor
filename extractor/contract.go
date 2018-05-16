@@ -28,36 +28,7 @@ import (
 	"github.com/Loopring/relay/dao"
 	"github.com/Loopring/relay/market/util"
 	"github.com/ethereum/go-ethereum/common"
-	"math/big"
 )
-
-func setTxInfo(tx *ethtyp.Transaction, gasUsed, blockTime *big.Int, methodName string) types.TxInfo {
-	var txinfo types.TxInfo
-
-	txinfo.BlockNumber = tx.BlockNumber.BigInt()
-	txinfo.BlockTime = blockTime.Int64()
-	txinfo.BlockHash = common.HexToHash(tx.BlockHash)
-	txinfo.TxHash = common.HexToHash(tx.Hash)
-	txinfo.TxIndex = tx.TransactionIndex.Int64()
-	txinfo.Protocol = common.HexToAddress(tx.To)
-	txinfo.From = common.HexToAddress(tx.From)
-	txinfo.To = common.HexToAddress(tx.To)
-	txinfo.GasLimit = tx.Gas.BigInt()
-	txinfo.GasUsed = gasUsed
-	txinfo.GasPrice = tx.GasPrice.BigInt()
-	txinfo.Nonce = tx.Nonce.BigInt()
-	txinfo.Value = tx.Value.BigInt()
-
-	if impl, ok := ethaccessor.ProtocolAddresses()[txinfo.To]; ok {
-		txinfo.DelegateAddress = impl.DelegateAddress
-	} else {
-		txinfo.DelegateAddress = types.NilAddress
-	}
-
-	txinfo.Identify = methodName
-
-	return txinfo
-}
 
 type AbiProcessor struct {
 	events      map[common.Hash]EventData
@@ -86,8 +57,8 @@ func newAbiProcessor(db dao.RdsService, option *ExtractorOptions) *AbiProcessor 
 	processor.loadErc20Contract()
 	processor.loadWethContract()
 	processor.loadProtocolContract()
-	//processor.loadTokenRegisterContract()
-	//processor.loadTokenTransferDelegateProtocol()
+	processor.loadTokenRegisterContract()
+	processor.loadTokenTransferDelegateProtocol()
 
 	return processor
 }
@@ -366,51 +337,3 @@ func (processor *AbiProcessor) loadTokenTransferDelegateProtocol() {
 		log.Infof("extractor,contract event name:%s -> key:%s", eventData.Name, eventData.Id.Hex())
 	}
 }
-
-/*
-func (processor *AbiProcessor) handleEthTransfer(tx *ethaccessor.Transaction, receipt *ethaccessor.TransactionReceipt, time *big.Int) error {
-	var dst types.TransferEvent
-
-	dst.From = common.HexToAddress(tx.From)
-	dst.To = common.HexToAddress(tx.To)
-	dst.TxHash = common.HexToHash(tx.Hash)
-	dst.Amount = tx.Value.BigInt()
-	dst.Value = tx.Value.BigInt()
-	dst.TxLogIndex = 0
-	dst.BlockNumber = tx.BlockNumber.BigInt()
-	dst.BlockTime = time.Int64()
-
-	dst.GasLimit = tx.Gas.BigInt()
-	dst.GasPrice = tx.GasPrice.BigInt()
-	dst.Nonce = tx.Nonce.BigInt()
-
-	dst.Sender = common.HexToAddress(tx.From)
-	dst.Receiver = common.HexToAddress(tx.To)
-	dst.GasUsed, dst.Status = processor.getGasAndStatus(tx, receipt)
-
-	log.Debugf("extractor,tx:%s handleEthTransfer from:%s, to:%s, value:%s, gasUsed:%s, status:%d", tx.Hash, tx.From, tx.To, tx.Value.BigInt().String(), dst.GasUsed.String(), dst.Status)
-
-	eventemitter.Emit(eventemitter.EthTransferEvent, &dst)
-
-	return nil
-}
-
-func (processor *AbiProcessor) getGasAndStatus(tx *ethaccessor.Transaction, receipt *ethaccessor.TransactionReceipt) (*big.Int, types.TxStatus) {
-	var (
-		gasUsed *big.Int
-		status  types.TxStatus
-	)
-	if receipt == nil {
-		gasUsed = big.NewInt(0)
-		status = types.TX_STATUS_PENDING
-	} else if receipt.Failed(tx) {
-		gasUsed = receipt.GasUsed.BigInt()
-		status = types.TX_STATUS_FAILED
-	} else {
-		gasUsed = receipt.GasUsed.BigInt()
-		status = types.TX_STATUS_SUCCESS
-	}
-
-	return gasUsed, status
-}
-*/

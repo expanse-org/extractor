@@ -95,7 +95,7 @@ func (e EventData) beforeUnpack(tx *ethtyp.Transaction, evtLog *ethtyp.Log, gasU
 	return
 }
 
-func (e EventData) afterUnpack() (interface{}, error) {
+func (e EventData) afterUnpack() ([]interface{}, error) {
 
 }
 

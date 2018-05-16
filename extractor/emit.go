@@ -24,8 +24,12 @@ import (
 	"github.com/Loopring/relay-lib/eventemitter"
 )
 
-func getTopic(name string) string {
+func getTopic(name string, isFill, isEthTransfer bool) string {
 	var topic string
+
+	if isEthTransfer {
+		return eventemitter.EthTransfer
+	}
 
 	switch name {
 	// methods
@@ -55,7 +59,11 @@ func getTopic(name string) string {
 
 	// events
 	case contract.EVENT_RING_MINED:
-		topic = eventemitter.RingMined
+		if isFill {
+			topic = eventemitter.OrderFilled
+		} else {
+			topic = eventemitter.RingMined
+		}
 
 	case contract.EVENT_ORDER_CANCELLED:
 		topic = eventemitter.CancelOrder
