@@ -20,11 +20,11 @@ package extractor
 
 import (
 	"fmt"
-	"github.com/Loopring/accessor/ethaccessor"
 	"github.com/Loopring/extractor/dao"
+	"github.com/Loopring/relay-lib/eth/accessor"
 	ethtyp "github.com/Loopring/relay-lib/eth/types"
+	"github.com/Loopring/relay-lib/log"
 	"github.com/Loopring/relay-lib/types"
-	"log"
 	"math/big"
 )
 
@@ -44,7 +44,7 @@ func newForkDetector(db dao.RdsService, startBlockConfig *big.Int) *forkDetector
 	}
 
 	var block ethtyp.Block
-	if err := ethaccessor.GetBlockByNumber(&block, startBlockConfig, false); err != nil {
+	if err := accessor.GetBlockByNumber(&block, startBlockConfig, false); err != nil {
 		log.Fatalf("extractor,fork detector can not find init block:%s", startBlockConfig.String())
 	}
 
@@ -109,7 +109,7 @@ func (detector *forkDetector) getForkedBlock(block *types.Block) (*types.Block, 
 	}
 
 	// find parent block on chain
-	if err := ethaccessor.GetBlockByHash(&ethBlock, block.ParentHash.Hex(), false); err != nil {
+	if err := accessor.GetBlockByHash(&ethBlock, block.ParentHash.Hex(), false); err != nil {
 		return nil, err
 	}
 

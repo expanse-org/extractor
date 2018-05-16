@@ -20,8 +20,8 @@ package extractor
 
 import (
 	"fmt"
-	"github.com/Loopring/accessor/ethaccessor"
 	"github.com/Loopring/extractor/dao"
+	"github.com/Loopring/relay-lib/eth/accessor"
 	"github.com/Loopring/relay-lib/eth/contract"
 	ethtyp "github.com/Loopring/relay-lib/eth/types"
 	"github.com/Loopring/relay-lib/eventemitter"
@@ -58,7 +58,7 @@ type ExtractorServiceImpl struct {
 	lock             sync.RWMutex
 	startBlockNumber *big.Int
 	endBlockNumber   *big.Int
-	iterator         *ethaccessor.BlockIterator
+	iterator         *accessor.BlockIterator
 	pendingTxWatcher *eventemitter.Watcher
 	syncComplete     bool
 	forkComplete     bool
@@ -101,7 +101,7 @@ func (l *ExtractorServiceImpl) Start() {
 	log.Infof("extractor start from block:%s...", l.startBlockNumber.String())
 	l.syncComplete = false
 
-	l.iterator = ethaccessor.NewBlockIterator(l.startBlockNumber, l.endBlockNumber, true, l.options.ConfirmBlockNumber)
+	l.iterator = accessor.NewBlockIterator(l.startBlockNumber, l.endBlockNumber, true, l.options.ConfirmBlockNumber)
 	go func() {
 		for {
 			select {
@@ -157,7 +157,7 @@ func (l *ExtractorServiceImpl) ForkProcess(currentBlock *types.Block) error {
 
 func (l *ExtractorServiceImpl) Sync(blockNumber *big.Int) {
 	var syncBlock types.Big
-	if err := ethaccessor.BlockNumber(&syncBlock); err != nil {
+	if err := accessor.BlockNumber(&syncBlock); err != nil {
 		l.Warning(fmt.Errorf("extractor,Sync chain block,get ethereum node current block number error:%s", err.Error()))
 	}
 	currentBlockNumber := new(big.Int).Add(blockNumber, big.NewInt(int64(l.options.ConfirmBlockNumber)))

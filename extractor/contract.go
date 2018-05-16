@@ -19,8 +19,8 @@
 package extractor
 
 import (
-	"github.com/Loopring/accessor/ethaccessor"
 	contract "github.com/Loopring/relay-lib/eth/contract"
+	lpraccessor "github.com/Loopring/relay-lib/eth/loopringaccessor"
 	ethtyp "github.com/Loopring/relay-lib/eth/types"
 	"github.com/Loopring/relay-lib/eventemitter"
 	"github.com/Loopring/relay-lib/log"
@@ -152,7 +152,7 @@ func (processor *AbiProcessor) loadProtocolAddress() {
 		log.Infof("extractor,contract protocol %s->%s", v.Symbol, v.Protocol.Hex())
 	}
 
-	for _, v := range ethaccessor.ProtocolAddresses() {
+	for _, v := range lpraccessor.ProtocolAddresses() {
 		protocolSymbol := "loopring"
 		delegateSymbol := "transfer_delegate"
 		tokenRegisterSymbol := "token_register"
@@ -168,12 +168,12 @@ func (processor *AbiProcessor) loadProtocolAddress() {
 }
 
 func (processor *AbiProcessor) loadProtocolContract() {
-	for name, event := range ethaccessor.ProtocolImplAbi().Events {
+	for name, event := range lpraccessor.ProtocolImplAbi().Events {
 		if name != contract.EVENT_RING_MINED && name != contract.EVENT_ORDER_CANCELLED && name != contract.EVENT_CUTOFF_ALL && name != contract.EVENT_CUTOFF_PAIR {
 			continue
 		}
 
-		eventData := newEventData(&event, ethaccessor.ProtocolImplAbi())
+		eventData := newEventData(&event, lpraccessor.ProtocolImplAbi())
 
 		switch eventData.Name {
 		case contract.EVENT_RING_MINED:
@@ -190,12 +190,12 @@ func (processor *AbiProcessor) loadProtocolContract() {
 		log.Infof("extractor,contract event name:%s -> key:%s", eventData.Name, eventData.Id.Hex())
 	}
 
-	for name, method := range ethaccessor.ProtocolImplAbi().Methods {
+	for name, method := range lpraccessor.ProtocolImplAbi().Methods {
 		if name != contract.METHOD_SUBMIT_RING && name != contract.METHOD_CANCEL_ORDER && name != contract.METHOD_CUTOFF_ALL && name != contract.METHOD_CUTOFF_PAIR {
 			continue
 		}
 
-		methodData := newMethodData(&method, ethaccessor.ProtocolImplAbi())
+		methodData := newMethodData(&method, lpraccessor.ProtocolImplAbi())
 
 		switch methodData.Name {
 		case contract.METHOD_SUBMIT_RING:
@@ -214,13 +214,13 @@ func (processor *AbiProcessor) loadProtocolContract() {
 }
 
 func (processor *AbiProcessor) loadErc20Contract() {
-	for name, event := range ethaccessor.Erc20Abi().Events {
+	for name, event := range lpraccessor.Erc20Abi().Events {
 		if name != contract.EVENT_TRANSFER && name != contract.EVENT_APPROVAL {
 			continue
 		}
 
 		watcher := &eventemitter.Watcher{}
-		eventData := newEventData(&event, ethaccessor.Erc20Abi())
+		eventData := newEventData(&event, lpraccessor.Erc20Abi())
 
 		switch eventData.Name {
 		case contract.EVENT_TRANSFER:
@@ -235,12 +235,12 @@ func (processor *AbiProcessor) loadErc20Contract() {
 		log.Infof("extractor,contract event name:%s -> key:%s", eventData.Name, eventData.Id.Hex())
 	}
 
-	for name, method := range ethaccessor.Erc20Abi().Methods {
+	for name, method := range lpraccessor.Erc20Abi().Methods {
 		if name != contract.METHOD_TRANSFER && name != contract.METHOD_APPROVE {
 			continue
 		}
 
-		methodData := newMethodData(&method, ethaccessor.Erc20Abi())
+		methodData := newMethodData(&method, lpraccessor.Erc20Abi())
 
 		switch methodData.Name {
 		case contract.METHOD_TRANSFER:
@@ -255,12 +255,12 @@ func (processor *AbiProcessor) loadErc20Contract() {
 }
 
 func (processor *AbiProcessor) loadWethContract() {
-	for name, method := range ethaccessor.WethAbi().Methods {
+	for name, method := range lpraccessor.WethAbi().Methods {
 		if name != contract.METHOD_WETH_DEPOSIT && name != contract.METHOD_WETH_WITHDRAWAL {
 			continue
 		}
 
-		methodData := newMethodData(&method, ethaccessor.WethAbi())
+		methodData := newMethodData(&method, lpraccessor.WethAbi())
 
 		switch methodData.Name {
 		case contract.METHOD_WETH_DEPOSIT:
@@ -273,12 +273,12 @@ func (processor *AbiProcessor) loadWethContract() {
 		log.Infof("extractor,contract method name:%s -> key:%s", methodData.Name, methodData.Id)
 	}
 
-	for name, event := range ethaccessor.WethAbi().Events {
+	for name, event := range lpraccessor.WethAbi().Events {
 		if name != contract.EVENT_WETH_DEPOSIT && name != contract.EVENT_WETH_WITHDRAWAL {
 			continue
 		}
 
-		eventData := newEventData(&event, ethaccessor.WethAbi())
+		eventData := newEventData(&event, lpraccessor.WethAbi())
 
 		switch eventData.Name {
 		case contract.EVENT_WETH_DEPOSIT:
@@ -293,12 +293,12 @@ func (processor *AbiProcessor) loadWethContract() {
 }
 
 func (processor *AbiProcessor) loadTokenRegisterContract() {
-	for name, event := range ethaccessor.TokenRegistryAbi().Events {
+	for name, event := range lpraccessor.TokenRegistryAbi().Events {
 		if name != contract.EVENT_TOKEN_REGISTERED && name != contract.EVENT_TOKEN_UNREGISTERED {
 			continue
 		}
 
-		eventData := newEventData(&event, ethaccessor.TokenRegistryAbi())
+		eventData := newEventData(&event, lpraccessor.TokenRegistryAbi())
 
 		switch eventData.Name {
 		case contract.EVENT_TOKEN_REGISTERED:
@@ -313,12 +313,12 @@ func (processor *AbiProcessor) loadTokenRegisterContract() {
 }
 
 func (processor *AbiProcessor) loadTokenTransferDelegateProtocol() {
-	for name, event := range ethaccessor.DelegateAbi().Events {
+	for name, event := range lpraccessor.DelegateAbi().Events {
 		if name != contract.EVENT_ADDRESS_AUTHORIZED && name != contract.EVENT_ADDRESS_DEAUTHORIZED {
 			continue
 		}
 
-		eventData := newEventData(&event, ethaccessor.DelegateAbi())
+		eventData := newEventData(&event, lpraccessor.DelegateAbi())
 
 		switch eventData.Name {
 		case contract.EVENT_ADDRESS_AUTHORIZED:
