@@ -24,8 +24,8 @@ import (
 	ethtyp "github.com/Loopring/relay-lib/eth/types"
 	"github.com/Loopring/relay-lib/eventemitter"
 	"github.com/Loopring/relay-lib/log"
+	util "github.com/Loopring/relay-lib/marketutil"
 	"github.com/Loopring/relay-lib/types"
-	"github.com/Loopring/relay/market/util"
 	"github.com/ethereum/go-ethereum/common"
 )
 

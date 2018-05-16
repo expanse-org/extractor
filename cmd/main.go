@@ -16,7 +16,7 @@
 
 */
 
-package cmd
+package main
 
 import (
 	"fmt"
