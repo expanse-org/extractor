@@ -155,6 +155,7 @@ func RegistryEmitter(zkOpt zklock.ZkLockConfig, producerOpt, consumerOpt kafka.K
 	return nil
 }
 
+// todo:这里貌似释放非常慢
 func UnRegistryEmitter() {
 	zklock.ReleaseLock(ZKNAME_EXTRACTOR)
 	producer.Close()
