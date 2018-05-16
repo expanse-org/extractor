@@ -56,5 +56,5 @@ owner = "Loopring corporation"
          "v1.5.1" = "0xad52ab3c0e02cc3a3651ed30cfe83c3979567796"
 
 [zk_lock]
-    zk_servers = ""
+    zk_servers = "127.0.0.1:2181"
     connect_time_out = 10

@@ -93,5 +93,7 @@ func (n *Node) registerExtractor() {
 }
 
 func (n *Node) registerZkLock() {
-	zklock.Initialize(n.globalConfig.ZkLock)
+	if _, err := zklock.Initialize(n.globalConfig.ZkLock); err != nil {
+		log.Fatalf("node start, register zklock error:%s", err.Error())
+	}
 }
