@@ -49,7 +49,7 @@ func newMethodData(method *abi.Method, cabi *abi.ABI) MethodData {
 }
 
 // UnpackMethod v should be ptr
-func (m MethodData) handleMethod(tx *ethtyp.Transaction, gasUsed, blockTime *big.Int, status types.TxStatus, methodName string) error {
+func (m *MethodData) handleMethod(tx *ethtyp.Transaction, gasUsed, blockTime *big.Int, status types.TxStatus, methodName string) error {
 	if err := m.beforeUnpack(tx, gasUsed, blockTime, status, methodName); err != nil {
 		return err
 	}
@@ -64,7 +64,7 @@ func (m MethodData) handleMethod(tx *ethtyp.Transaction, gasUsed, blockTime *big
 }
 
 // beforeUnpack full fill method txinfo and set status...
-func (m MethodData) beforeUnpack(tx *ethtyp.Transaction, gasUsed, blockTime *big.Int, status types.TxStatus, methodName string) (err error) {
+func (m *MethodData) beforeUnpack(tx *ethtyp.Transaction, gasUsed, blockTime *big.Int, status types.TxStatus, methodName string) error {
 	m.TxInfo = setTxInfo(tx, gasUsed, blockTime, methodName)
 	m.TxLogIndex = 0
 	m.Status = status
@@ -72,21 +72,20 @@ func (m MethodData) beforeUnpack(tx *ethtyp.Transaction, gasUsed, blockTime *big
 	switch m.Name {
 	case contract.METHOD_CANCEL_ORDER:
 		if m.DelegateAddress == types.NilAddress {
-			err = fmt.Errorf("cancelOrder method cann't get delegate address")
+			return fmt.Errorf("cancelOrder method cann't get delegate address")
 		}
 	}
 
-	return err
+	return nil
 }
 
-func (m MethodData) unpack(tx *ethtyp.Transaction) (err error) {
+func (m *MethodData) unpack(tx *ethtyp.Transaction) error {
 	data := hexutil.MustDecode("0x" + tx.Input[10:])
-	err = m.Abi.Unpack(m.Method, m.Name, data, [][]byte{})
-	return err
+	return m.Abi.Unpack(m.Method, m.Name, data, [][]byte{})
 }
 
 // afterUnpack set special fields in internal event
-func (m MethodData) afterUnpack() error {
+func (m *MethodData) afterUnpack() error {
 	var (
 		event interface{}
 		err   error
@@ -119,7 +118,12 @@ func (m MethodData) afterUnpack() error {
 	return Emit(topic, event)
 }
 
-func (m MethodData) getSubmitRingEvent() (event *types.SubmitRingMethodEvent, err error) {
+func (m *MethodData) getSubmitRingEvent() (*types.SubmitRingMethodEvent, error) {
+	var (
+		event = &types.SubmitRingMethodEvent{}
+		err   error
+	)
+
 	src, ok := m.Method.(*contract.SubmitRingMethodInputs)
 	if !ok {
 		return nil, fmt.Errorf("submitRing method inputs type error")
@@ -147,7 +151,7 @@ func (m MethodData) getSubmitRingEvent() (event *types.SubmitRingMethodEvent, er
 	return event, nil
 }
 
-func (m MethodData) getOrderCancelledEvent() (event *types.OrderCancelledEvent, err error) {
+func (m *MethodData) getOrderCancelledEvent() (event *types.OrderCancelledEvent, err error) {
 	src, ok := m.Method.(*contract.CancelOrderMethod)
 	if !ok {
 		return nil, fmt.Errorf("cancelOrder method inputs type error")
@@ -169,7 +173,7 @@ func (m MethodData) getOrderCancelledEvent() (event *types.OrderCancelledEvent, 
 	return tmCancelEvent, nil
 }
 
-func (m MethodData) getCutoffAllEvent() (event *types.CutoffEvent, err error) {
+func (m *MethodData) getCutoffAllEvent() (event *types.CutoffEvent, err error) {
 	src, ok := m.Method.(*contract.CutoffMethod)
 	if !ok {
 		return nil, fmt.Errorf("cutoffAll method inputs type error")
@@ -183,7 +187,7 @@ func (m MethodData) getCutoffAllEvent() (event *types.CutoffEvent, err error) {
 	return event, err
 }
 
-func (m MethodData) getCutoffPairEvent() (event *types.CutoffPairEvent, err error) {
+func (m *MethodData) getCutoffPairEvent() (event *types.CutoffPairEvent, err error) {
 	src, ok := m.Method.(*contract.CutoffPairMethod)
 	if !ok {
 		return nil, fmt.Errorf("cutoffPair method inputs type error")
@@ -198,7 +202,7 @@ func (m MethodData) getCutoffPairEvent() (event *types.CutoffPairEvent, err erro
 	return
 }
 
-func (m MethodData) getApproveEvent() (event *types.ApprovalEvent, err error) {
+func (m *MethodData) getApproveEvent() (event *types.ApprovalEvent, err error) {
 	src, ok := m.Method.(*contract.ApproveMethod)
 	if !ok {
 		return nil, fmt.Errorf("approve method inputs type error")
@@ -213,7 +217,7 @@ func (m MethodData) getApproveEvent() (event *types.ApprovalEvent, err error) {
 	return
 }
 
-func (m MethodData) getTransferEvent() (event *types.TransferEvent, err error) {
+func (m *MethodData) getTransferEvent() (event *types.TransferEvent, err error) {
 	src := m.Method.(*contract.TransferMethod)
 
 	event = src.ConvertDown()
@@ -225,7 +229,7 @@ func (m MethodData) getTransferEvent() (event *types.TransferEvent, err error) {
 	return
 }
 
-func (m MethodData) getDepositEvent() (event *types.WethDepositEvent, err error) {
+func (m *MethodData) getDepositEvent() (event *types.WethDepositEvent, err error) {
 	event.Dst = m.From
 	event.Amount = m.Value
 	event.TxInfo = m.TxInfo
@@ -235,7 +239,7 @@ func (m MethodData) getDepositEvent() (event *types.WethDepositEvent, err error)
 	return
 }
 
-func (m MethodData) getWithdrawalEvent() (event *types.WethWithdrawalEvent, err error) {
+func (m *MethodData) getWithdrawalEvent() (event *types.WethWithdrawalEvent, err error) {
 	src, ok := m.Method.(*contract.WethWithdrawalMethod)
 	if !ok {
 		return nil, fmt.Errorf("wethWithdrawal method inputs type error")

@@ -29,6 +29,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"runtime"
+	"sort"
 )
 
 func main() {
@@ -37,12 +38,10 @@ func main() {
 	app.HideVersion = true // we have a command to print the version
 	app.Copyright = "Copyright 2013-2017 The Loopring Authors"
 
-	//globalFlags := utils.GlobalFlags()
-	//minerFlags := utils.MinerFlags()
-	//app.Flags = append(app.Flags, globalFlags...)
-	//app.Flags = append(app.Flags, minerFlags...)
-	//app.Commands = []cli.Command{}
-	//sort.Sort(cli.CommandsByName(app.Commands))
+	globalFlags := GlobalFlags()
+	app.Flags = append(app.Flags, globalFlags...)
+	app.Commands = []cli.Command{}
+	sort.Sort(cli.CommandsByName(app.Commands))
 
 	app.Before = func(ctx *cli.Context) error {
 		runtime.GOMAXPROCS(runtime.NumCPU())
@@ -70,8 +69,16 @@ func NewApp() *cli.App {
 	return app
 }
 
-func startNode(ctx *cli.Context) error {
+func GlobalFlags() []cli.Flag {
+	return []cli.Flag{
+		cli.StringFlag{
+			Name:  "config,c",
+			Usage: "config file",
+		},
+	}
+}
 
+func startNode(ctx *cli.Context) error {
 	globalConfig := SetGlobalConfig(ctx)
 
 	logger := log.Initialize(globalConfig.Log.ZapOpts)

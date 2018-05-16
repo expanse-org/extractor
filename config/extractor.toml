@@ -47,8 +47,6 @@ owner = "Loopring corporation"
     end_block_number = 0
     confirm_block_number = 0
     debug = false
-    open = true
-
 
 [loopring_protocol]
     [loopring_protocol.protocolImpl]

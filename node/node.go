@@ -23,7 +23,9 @@ import (
 
 	"github.com/Loopring/extractor/dao"
 	"github.com/Loopring/extractor/extractor"
+	"github.com/Loopring/relay-lib/cache"
 	"github.com/Loopring/relay-lib/eth/accessor"
+	"github.com/Loopring/relay-lib/eth/loopringaccessor"
 	"github.com/Loopring/relay-lib/log"
 	"go.uber.org/zap"
 )
@@ -33,7 +35,7 @@ type Node struct {
 	rdsService   dao.RdsService
 	extractor    extractor.ExtractorService
 
-	stop   chan struct{}
+	stop   chan bool
 	lock   sync.RWMutex
 	logger *zap.Logger
 }
@@ -44,10 +46,10 @@ func NewNode(logger *zap.Logger, globalConfig *GlobalConfig) *Node {
 	n.globalConfig = globalConfig
 
 	// register
+	n.registerCache()
 	n.registerMysql()
 	n.registerAccessor()
 	n.registerExtractor()
-	//cache.NewCache(n.globalConfig.Redis)
 
 	return n
 }
@@ -65,8 +67,11 @@ func (n *Node) Wait() {
 	<-stop
 }
 
-// todo
 func (n *Node) Stop() {
+}
+
+func (n *Node) registerCache() {
+	cache.NewCache(n.globalConfig.Redis)
 }
 
 func (n *Node) registerMysql() {
@@ -74,11 +79,14 @@ func (n *Node) registerMysql() {
 }
 
 func (n *Node) registerAccessor() {
-	if err := accessor.Initialize(n.globalConfig.Accessor); nil != err {
-		log.Fatalf("err:%s", err.Error())
+	if err := accessor.Initialize(n.globalConfig.Accessor); err != nil {
+		log.Fatalf("node start, register accessor error:%s", err.Error())
+	}
+	if err := loopringaccessor.InitLoopringAccessor(n.globalConfig.LoopringProtocol); err != nil {
+		log.Fatalf("node start, register loopring accessor error:%s", err.Error())
 	}
 }
 
 func (n *Node) registerExtractor() {
-	extractor.NewExtractorService(&n.globalConfig.Extractor, n.rdsService)
+	n.extractor = extractor.NewExtractorService(n.globalConfig.Extractor, n.rdsService)
 }

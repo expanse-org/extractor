@@ -48,9 +48,8 @@ type ExtractorService interface {
 	ForkProcess(block *types.Block) error
 }
 
-// TODO(fukun):不同的channel，应当交给orderbook统一进行后续处理，可以将channel作为函数返回值、全局变量、参数等方式
 type ExtractorServiceImpl struct {
-	options          *ExtractorOptions
+	options          ExtractorOptions
 	detector         *forkDetector
 	processor        *AbiProcessor
 	dao              dao.RdsService
@@ -70,10 +69,9 @@ type ExtractorOptions struct {
 	ConfirmBlockNumber uint64
 	ForkWaitingTime    int64
 	Debug              bool
-	Open               bool
 }
 
-func NewExtractorService(options *ExtractorOptions, db dao.RdsService) *ExtractorServiceImpl {
+func NewExtractorService(options ExtractorOptions, db dao.RdsService) *ExtractorServiceImpl {
 	var l ExtractorServiceImpl
 
 	if options.ForkWaitingTime <= 0 {
@@ -94,10 +92,6 @@ func NewExtractorService(options *ExtractorOptions, db dao.RdsService) *Extracto
 }
 
 func (l *ExtractorServiceImpl) Start() {
-	if !l.options.Open {
-		return
-	}
-
 	log.Infof("extractor start from block:%s...", l.startBlockNumber.String())
 	l.syncComplete = false
 
@@ -118,10 +112,6 @@ func (l *ExtractorServiceImpl) Start() {
 }
 
 func (l *ExtractorServiceImpl) Stop() {
-	if !l.options.Open {
-		return
-	}
-
 	l.stop <- true
 }
 
@@ -180,7 +170,10 @@ func (l *ExtractorServiceImpl) Warning(err error) {
 
 func (l *ExtractorServiceImpl) WatchingPendingTransaction(input eventemitter.EventData) error {
 	tx := input.(*ethtyp.Transaction)
-	return l.ProcessPendingTransaction(tx)
+	if err := l.ProcessPendingTransaction(tx); err != nil {
+		log.Errorf("extractor, watching pending transaction error:%s", err.Error())
+	}
+	return nil
 }
 
 func (l *ExtractorServiceImpl) ProcessBlock() error {
@@ -225,7 +218,9 @@ func (l *ExtractorServiceImpl) ProcessBlock() error {
 		for idx, transaction := range block.Transactions {
 			receipt := block.Receipts[idx]
 			l.debug("extractor,tx:%s", transaction.Hash)
-			l.ProcessMinedTransaction(&transaction, &receipt, block.Timestamp.BigInt())
+			if err := l.ProcessMinedTransaction(&transaction, &receipt, block.Timestamp.BigInt()); err != nil {
+				log.Errorf("extractor, process mined transaction error:%s", err.Error())
+			}
 		}
 	}
 

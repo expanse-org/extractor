@@ -35,7 +35,7 @@ import (
 func LoadConfig(file string) *GlobalConfig {
 	if "" == file {
 		dir, _ := os.Getwd()
-		file = dir + "/config/relay.toml"
+		file = dir + "/config/extractor.toml"
 	}
 
 	io, err := os.Open(file)
@@ -58,8 +58,8 @@ type GlobalConfig struct {
 	Log              LogOptions
 	Mysql            libdao.MysqlOptions
 	Redis            redis.RedisOptions
-	Accessor         accessor.AccessorOptions
 	Extractor        extractor.ExtractorOptions
+	Accessor         accessor.AccessorOptions
 	LoopringProtocol lpraccssor.LoopringProtocolOptions
 }
 
