@@ -21,14 +21,12 @@ package extractor
 import (
 	"fmt"
 	"github.com/Loopring/accessor/ethaccessor"
-	"github.com/Loopring/relay-lib/eth/abi"
+	"github.com/Loopring/extractor/dao"
 	"github.com/Loopring/relay-lib/eth/contract"
 	ethtyp "github.com/Loopring/relay-lib/eth/types"
 	"github.com/Loopring/relay-lib/eventemitter"
 	"github.com/Loopring/relay-lib/log"
 	"github.com/Loopring/relay-lib/types"
-	"github.com/Loopring/relay/dao"
-	"github.com/ethereum/go-ethereum/common/hexutil"
 	"math/big"
 	"sort"
 	"sync"
@@ -43,15 +41,6 @@ const (
 	defaultEndBlockNumber  = 1000000000
 	defaultForkWaitingTime = 10
 )
-
-type ExtractorOptions struct {
-	StartBlockNumber   *big.Int
-	EndBlockNumber     *big.Int
-	ConfirmBlockNumber uint64
-	ForkWaitingTime    int64
-	Debug              bool
-	Open               bool
-}
 
 type ExtractorService interface {
 	Start()
@@ -75,6 +64,15 @@ type ExtractorServiceImpl struct {
 	forkComplete     bool
 }
 
+type ExtractorOptions struct {
+	StartBlockNumber   *big.Int
+	EndBlockNumber     *big.Int
+	ConfirmBlockNumber uint64
+	ForkWaitingTime    int64
+	Debug              bool
+	Open               bool
+}
+
 func NewExtractorService(options *ExtractorOptions, db dao.RdsService) *ExtractorServiceImpl {
 	var l ExtractorServiceImpl
 
@@ -84,7 +82,7 @@ func NewExtractorService(options *ExtractorOptions, db dao.RdsService) *Extracto
 
 	l.options = options
 	l.dao = db
-	l.processor = newAbiProcessor(db, options)
+	l.processor = newAbiProcessor()
 	l.detector = newForkDetector(db, l.options.StartBlockNumber)
 	l.stop = make(chan bool, 1)
 	l.setBlockNumberRange()
@@ -268,11 +266,9 @@ func (l *ExtractorServiceImpl) ProcessMethod(tx *ethtyp.Transaction, receipt *et
 		return nil
 	}
 
-	gas, status := l.processor.getGasAndStatus(tx, receipt)
-	method.FullFilled(tx, gas, blockTime, status, method.Name)
-	eventemitter.Emit(method.Id, method)
-
-	return nil
+	gasUsed := getGasUsed(receipt)
+	status := getStatus(tx, receipt)
+	return method.handleMethod(tx, gasUsed, blockTime, status, method.Name)
 }
 
 func (l *ExtractorServiceImpl) ProcessEvent(tx *ethtyp.Transaction, receipt *ethtyp.TransactionReceipt, blockTime *big.Int) error {
@@ -292,6 +288,7 @@ func (l *ExtractorServiceImpl) ProcessEvent(tx *ethtyp.Transaction, receipt *eth
 		})
 	}
 
+	gasUsed := getGasUsed(receipt)
 	for _, evtLog := range receipt.Logs {
 		event, ok := l.processor.GetEvent(evtLog)
 		if !ok {
@@ -299,16 +296,9 @@ func (l *ExtractorServiceImpl) ProcessEvent(tx *ethtyp.Transaction, receipt *eth
 			continue
 		}
 
-		data := hexutil.MustDecode(evtLog.Data)
-		if nil != data && len(data) > 0 {
-			if err := event.Abi.Unpack(event.Event, event.Name, data, abi.SEL_UNPACK_EVENT); nil != err {
-				log.Errorf("extractor,process event,tx:%s unpack event error:%s", tx.Hash, err.Error())
-				continue
-			}
+		if err := event.handleEvent(tx, &evtLog, gasUsed, blockTime, methodName); err != nil {
+			log.Errorf("extractor, process event, tx:%s error:%s", tx.Hash, err.Error())
 		}
-
-		event.FullFilled(tx, &evtLog, receipt.GasUsed.BigInt(), blockTime, methodName)
-		eventemitter.Emit(event.Id.Hex(), event)
 	}
 
 	return nil

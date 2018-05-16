@@ -25,7 +25,6 @@ import (
 	"github.com/Loopring/relay-lib/eventemitter"
 	"github.com/Loopring/relay-lib/log"
 	"github.com/Loopring/relay-lib/types"
-	"github.com/Loopring/relay/dao"
 	"github.com/Loopring/relay/market/util"
 	"github.com/ethereum/go-ethereum/common"
 )
@@ -36,12 +35,10 @@ type AbiProcessor struct {
 	erc20Events map[common.Hash]bool
 	protocols   map[common.Address]string
 	delegates   map[common.Address]string
-	db          dao.RdsService
-	options     *ExtractorOptions
 }
 
 // 这里无需考虑版本问题，对解析来说，不接受版本升级带来数据结构变化的可能性
-func newAbiProcessor(db dao.RdsService, option *ExtractorOptions) *AbiProcessor {
+func newAbiProcessor() *AbiProcessor {
 	processor := &AbiProcessor{}
 
 	processor.events = make(map[common.Hash]EventData)
@@ -49,9 +46,6 @@ func newAbiProcessor(db dao.RdsService, option *ExtractorOptions) *AbiProcessor 
 	processor.methods = make(map[string]MethodData)
 	processor.protocols = make(map[common.Address]string)
 	processor.delegates = make(map[common.Address]string)
-	processor.db = db
-
-	processor.options = option
 
 	processor.loadProtocolAddress()
 	processor.loadErc20Contract()

@@ -2,3 +2,4 @@
 
 .idea
 extractor.iml
+config/debug.toml
