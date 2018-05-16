@@ -19,26 +19,10 @@
 package dao
 
 import (
-	txtyp "github.com/Loopring/relay/txmanager/types"
-	"github.com/Loopring/relay/types"
 	"github.com/ethereum/go-ethereum/common"
-	"math/big"
 )
 
-type RdsService interface {
-	// create tables
-	Prepare()
-
-	// base functions
-	Add(item interface{}) error
-	Del(item interface{}) error
-	First(item interface{}) error
-	Last(item interface{}) error
-	Save(item interface{}) error
-	FindAll(item interface{}) error
-
-
-	// block table
+type RdsServiceInterface interface {
 	FindBlockByHash(blockhash common.Hash) (*Block, error)
 	FindLatestBlock() (*Block, error)
 	SetForkBlock(from, to int64) error

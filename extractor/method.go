@@ -89,7 +89,7 @@ func (m MethodData) unpack(tx *ethtyp.Transaction) (err error) {
 func (m MethodData) afterUnpack() error {
 	var (
 		event interface{}
-		err error
+		err   error
 	)
 
 	switch m.Name {

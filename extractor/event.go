@@ -96,10 +96,9 @@ func (e EventData) afterUnpack() error {
 		}
 	}
 
-
 	var (
 		event interface{}
-		err error
+		err   error
 	)
 
 	switch e.Name {
