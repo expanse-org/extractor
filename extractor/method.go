@@ -20,6 +20,7 @@ package extractor
 
 import (
 	"fmt"
+	"github.com/Loopring/extractor/emit"
 	"github.com/Loopring/relay-lib/eth/abi"
 	"github.com/Loopring/relay-lib/eth/contract"
 	ethtyp "github.com/Loopring/relay-lib/eth/types"
@@ -114,8 +115,8 @@ func (m *MethodData) afterUnpack() error {
 		return err
 	}
 
-	topic := getTopic(m.Name, false, false)
-	return Emit(topic, event)
+	topic := emit.Topic(m.Name, false, false)
+	return emit.Emit(topic, event)
 }
 
 func (m *MethodData) getSubmitRingEvent() (*types.SubmitRingMethodEvent, error) {

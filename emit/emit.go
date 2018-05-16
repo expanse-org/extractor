@@ -16,7 +16,7 @@
 
 */
 
-package extractor
+package emit
 
 import (
 	"fmt"
@@ -24,7 +24,7 @@ import (
 	"github.com/Loopring/relay-lib/eventemitter"
 )
 
-func getTopic(name string, isFill, isEthTransfer bool) string {
+func Topic(name string, isFill, isEthTransfer bool) string {
 	var topic string
 
 	if isEthTransfer {
