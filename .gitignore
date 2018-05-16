@@ -3,3 +3,5 @@
 .idea
 extractor.iml
 config/debug.toml
+vendor.sh
+vendor/
