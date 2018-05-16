@@ -21,22 +21,22 @@ package extractor
 import (
 	"fmt"
 	"github.com/Loopring/accessor/ethaccessor"
+	"github.com/Loopring/extractor/dao"
 	ethtyp "github.com/Loopring/relay-lib/eth/types"
 	"github.com/Loopring/relay-lib/types"
-	"github.com/Loopring/relay/dao"
 	"log"
 	"math/big"
 )
 
 type forkDetector struct {
 	db          dao.RdsService
-	latestBlock *ethtyp.Block
+	latestBlock *types.Block
 }
 
 func newForkDetector(db dao.RdsService, startBlockConfig *big.Int) *forkDetector {
 	detector := &forkDetector{}
 	detector.db = db
-	detector.latestBlock = &ethtyp.Block{}
+	detector.latestBlock = &types.Block{}
 
 	if entity, err := detector.db.FindLatestBlock(); err == nil {
 		entity.ConvertUp(detector.latestBlock)
@@ -96,10 +96,10 @@ func (detector *forkDetector) Detect(currentBlock *types.Block) (*types.ForkedEv
 	return &forkEvent, nil
 }
 
-func (detector *forkDetector) getForkedBlock(block *ethtyp.Block) (*types.Block, error) {
+func (detector *forkDetector) getForkedBlock(block *types.Block) (*types.Block, error) {
 	var (
 		ethBlock    ethtyp.Block
-		parentBlock ethtyp.Block
+		parentBlock types.Block
 	)
 
 	// find parent block in database
