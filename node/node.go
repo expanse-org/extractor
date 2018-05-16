@@ -26,13 +26,14 @@ import (
 	"github.com/Loopring/relay-lib/eth/loopringaccessor"
 	"github.com/Loopring/relay-lib/log"
 	"go.uber.org/zap"
+	"sync"
 )
 
 type Node struct {
 	globalConfig *GlobalConfig
 	rdsService   dao.RdsService
 	extractor    extractor.ExtractorService
-	stop         chan bool
+	wg           *sync.WaitGroup
 	logger       *zap.Logger
 }
 
@@ -40,6 +41,7 @@ func NewNode(logger *zap.Logger, globalConfig *GlobalConfig) *Node {
 	n := &Node{}
 	n.logger = logger
 	n.globalConfig = globalConfig
+	n.wg = new(sync.WaitGroup)
 
 	n.registerCache()
 	n.registerMysql()
@@ -52,15 +54,17 @@ func NewNode(logger *zap.Logger, globalConfig *GlobalConfig) *Node {
 
 func (n *Node) Start() {
 	n.extractor.Start()
+	n.wg.Add(1)
 }
 
 func (n *Node) Wait() {
-	//n.stop = make(chan bool)
-	<-n.stop
+	n.wg.Wait()
 }
 
+// todo:释放的时候wg.wait太久
 func (n *Node) Stop() {
-	extractor.UnRegistryEmitter()
+	//extractor.UnRegistryEmitter()
+	n.wg.Done()
 }
 
 func (n *Node) registerCache() {
