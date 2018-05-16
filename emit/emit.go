@@ -21,15 +21,11 @@ package emit
 import (
 	"fmt"
 	"github.com/Loopring/relay-lib/eth/contract"
-	"github.com/Loopring/relay-lib/eventemitter"
+	eventemitter "github.com/Loopring/relay-lib/kafka"
 )
 
-func Topic(name string, isFill, isEthTransfer bool) string {
+func Topic(name string) string {
 	var topic string
-
-	if isEthTransfer {
-		return eventemitter.EthTransfer
-	}
 
 	switch name {
 	// methods
@@ -58,13 +54,6 @@ func Topic(name string, isFill, isEthTransfer bool) string {
 		topic = eventemitter.WethWithdrawal
 
 	// events
-	case contract.EVENT_RING_MINED:
-		if isFill {
-			topic = eventemitter.OrderFilled
-		} else {
-			topic = eventemitter.RingMined
-		}
-
 	case contract.EVENT_ORDER_CANCELLED:
 		topic = eventemitter.CancelOrder
 
@@ -105,11 +94,26 @@ func Topic(name string, isFill, isEthTransfer bool) string {
 	return topic
 }
 
+func RingMinedTopic(isFill bool) string {
+	if isFill {
+		return eventemitter.OrderFilled
+	}
+	return eventemitter.RingMined
+}
+
+func EthTxTopic(isTransfer bool) string {
+	if isTransfer {
+		return eventemitter.EthTransfer
+	}
+	return eventemitter.UnsupportedContract
+}
+
 func Emit(topic string, event interface{}) error {
 	if topic == "" {
 		return fmt.Errorf("emit topic is empty")
 	}
 
-	eventemitter.Emit(topic, event)
+	// todo 对接kafka
+	//eventemitter.Emit(topic, event)
 	return nil
 }

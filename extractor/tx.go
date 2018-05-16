@@ -19,6 +19,7 @@
 package extractor
 
 import (
+	"github.com/Loopring/extractor/emit"
 	"github.com/Loopring/relay-lib/eth/contract"
 	ethtyp "github.com/Loopring/relay-lib/eth/types"
 	"github.com/Loopring/relay-lib/log"
@@ -56,25 +57,34 @@ func setTxInfo(tx *ethtyp.Transaction, gasUsed, blockTime *big.Int, methodName s
 	return txinfo
 }
 
-func (processor *AbiProcessor) handleEthTransfer(tx *ethtyp.Transaction, receipt *ethtyp.TransactionReceipt, time *big.Int) error {
-	dst := &types.TransferEvent{}
-
+func handleOtherTransaction(tx *ethtyp.Transaction, receipt *ethtyp.TransactionReceipt, time *big.Int) error {
 	gasUsed := getGasUsed(receipt)
 	txinfo := setTxInfo(tx, gasUsed, time, contract.METHOD_UNKNOWN)
 
-	dst.TxInfo = txinfo
-	dst.Amount = tx.Value.BigInt()
-	dst.TxLogIndex = 0
-	dst.Sender = common.HexToAddress(tx.From)
-	dst.Receiver = common.HexToAddress(tx.To)
-	dst.Status = getStatus(tx, receipt)
+	if tx.Value.BigInt().Cmp(big.NewInt(0)) > 0 {
+		event := &types.TransferEvent{}
+		event.TxInfo = txinfo
+		event.Amount = tx.Value.BigInt()
+		event.TxLogIndex = 0
+		event.Status = getStatus(tx, receipt)
+		event.Sender = common.HexToAddress(tx.From)
+		event.Receiver = common.HexToAddress(tx.To)
 
-	log.Debugf("extractor,tx:%s handleEthTransfer from:%s, to:%s, value:%s, gasUsed:%s, status:%d", tx.Hash, tx.From, tx.To, tx.Value.BigInt().String(), dst.GasUsed.String(), dst.Status)
+		log.Debugf("extractor,tx:%s handleEthTransfer sender:%s, receiver:%s, value:%s, gasUsed:%s, status:%d", event.TxHash.Hex(), event.Sender.Hex(), event.Receiver.Hex(), event.Amount.String(), event.GasUsed.String(), event.Status)
 
-	topic := getTopic("", false, true)
-	Emit(topic, &dst)
+		topic := emit.EthTxTopic(true)
+		return emit.Emit(topic, &event)
+	} else {
+		event := &types.TransactionEvent{}
+		event.TxInfo = txinfo
+		event.TxLogIndex = 0
+		event.Status = getStatus(tx, receipt)
 
-	return nil
+		log.Debugf("extractor,tx:%s handleOtherTransaction from:%s, to:%s, gasUsed:%s, status:%d", event.TxHash.Hex(), event.From.Hex(), event.To.Hex(), event.GasUsed.String(), event.Status)
+
+		topic := emit.EthTxTopic(false)
+		return emit.Emit(topic, &event)
+	}
 }
 
 func getGasUsed(receipt *ethtyp.TransactionReceipt) *big.Int {

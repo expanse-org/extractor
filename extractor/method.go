@@ -115,7 +115,7 @@ func (m *MethodData) afterUnpack() error {
 		return err
 	}
 
-	topic := emit.Topic(m.Name, false, false)
+	topic := emit.Topic(m.Name)
 	return emit.Emit(topic, event)
 }
 
@@ -152,7 +152,7 @@ func (m *MethodData) getSubmitRingEvent() (*types.SubmitRingMethodEvent, error) 
 	return event, nil
 }
 
-func (m *MethodData) getOrderCancelledEvent() (event *types.OrderCancelledEvent, err error) {
+func (m *MethodData) getOrderCancelledEvent() (*types.OrderCancelledEvent, error) {
 	src, ok := m.Method.(*contract.CancelOrderMethod)
 	if !ok {
 		return nil, fmt.Errorf("cancelOrder method inputs type error")
@@ -163,94 +163,94 @@ func (m *MethodData) getOrderCancelledEvent() (event *types.OrderCancelledEvent,
 	order.DelegateAddress = m.DelegateAddress
 	order.Hash = order.GenerateHash()
 
-	// 发送到txmanager
-	tmCancelEvent := &types.OrderCancelledEvent{}
-	tmCancelEvent.TxInfo = m.TxInfo
-	tmCancelEvent.OrderHash = order.Hash
-	tmCancelEvent.AmountCancelled = cancelAmount
+	event := &types.OrderCancelledEvent{}
+	event.TxInfo = m.TxInfo
+	event.OrderHash = order.Hash
+	event.AmountCancelled = cancelAmount
 
 	log.Debugf("extractor,tx:%s cancelOrder method order tokenS:%s,tokenB:%s,amountS:%s,amountB:%s", event.TxHash.Hex(), order.TokenS.Hex(), order.TokenB.Hex(), order.AmountS.String(), order.AmountB.String())
 
-	return tmCancelEvent, nil
+	return event, nil
 }
 
-func (m *MethodData) getCutoffAllEvent() (event *types.CutoffEvent, err error) {
+func (m *MethodData) getCutoffAllEvent() (*types.CutoffEvent, error) {
 	src, ok := m.Method.(*contract.CutoffMethod)
 	if !ok {
 		return nil, fmt.Errorf("cutoffAll method inputs type error")
 	}
 
-	event = src.ConvertDown()
+	event := src.ConvertDown()
 	event.TxInfo = m.TxInfo
 	event.Owner = event.From
 	log.Debugf("extractor,tx:%s cutoff method owner:%s, cutoff:%d, status:%d", event.TxHash.Hex(), event.Owner.Hex(), event.Cutoff.Int64(), event.Status)
 
-	return event, err
+	return event, nil
 }
 
-func (m *MethodData) getCutoffPairEvent() (event *types.CutoffPairEvent, err error) {
+func (m *MethodData) getCutoffPairEvent() (*types.CutoffPairEvent, error) {
 	src, ok := m.Method.(*contract.CutoffPairMethod)
 	if !ok {
 		return nil, fmt.Errorf("cutoffPair method inputs type error")
 	}
 
-	event = src.ConvertDown()
+	event := src.ConvertDown()
 	event.TxInfo = m.TxInfo
 	event.Owner = event.From
 
 	log.Debugf("extractor,tx:%s cutoffpair method owenr:%s, token1:%s, token2:%s, cutoff:%d", event.TxHash.Hex(), event.Owner.Hex(), event.Token1.Hex(), event.Token2.Hex(), event.Cutoff.Int64())
 
-	return
+	return event, nil
 }
 
-func (m *MethodData) getApproveEvent() (event *types.ApprovalEvent, err error) {
+func (m *MethodData) getApproveEvent() (*types.ApprovalEvent, error) {
 	src, ok := m.Method.(*contract.ApproveMethod)
 	if !ok {
 		return nil, fmt.Errorf("approve method inputs type error")
 	}
 
-	event = src.ConvertDown()
+	event := src.ConvertDown()
 	event.TxInfo = m.TxInfo
 	event.Owner = m.From
 
 	log.Debugf("extractor,tx:%s approve method owner:%s, spender:%s, value:%s", event.TxHash.Hex(), event.Owner.Hex(), event.Spender.Hex(), event.Amount.String())
 
-	return
+	return event, nil
 }
 
-func (m *MethodData) getTransferEvent() (event *types.TransferEvent, err error) {
+func (m *MethodData) getTransferEvent() (*types.TransferEvent, error) {
 	src := m.Method.(*contract.TransferMethod)
 
-	event = src.ConvertDown()
+	event := src.ConvertDown()
 	event.Sender = m.From
 	event.TxInfo = m.TxInfo
 
 	log.Debugf("extractor,tx:%s transfer method sender:%s, receiver:%s, value:%s", event.TxHash.Hex(), event.Sender.Hex(), event.Receiver.Hex(), event.Amount.String())
 
-	return
+	return event, nil
 }
 
-func (m *MethodData) getDepositEvent() (event *types.WethDepositEvent, err error) {
+func (m *MethodData) getDepositEvent() (*types.WethDepositEvent, error) {
+	event := &types.WethDepositEvent{}
 	event.Dst = m.From
 	event.Amount = m.Value
 	event.TxInfo = m.TxInfo
 
 	log.Debugf("extractor,tx:%s wethDeposit method from:%s, to:%s, value:%s", event.TxHash.Hex(), event.From.Hex(), event.To.Hex(), event.Amount.String())
 
-	return
+	return event, nil
 }
 
-func (m *MethodData) getWithdrawalEvent() (event *types.WethWithdrawalEvent, err error) {
+func (m *MethodData) getWithdrawalEvent() (*types.WethWithdrawalEvent, error) {
 	src, ok := m.Method.(*contract.WethWithdrawalMethod)
 	if !ok {
 		return nil, fmt.Errorf("wethWithdrawal method inputs type error")
 	}
 
-	event = src.ConvertDown()
+	event := src.ConvertDown()
 	event.Src = m.From
 	event.TxInfo = m.TxInfo
 
 	log.Debugf("extractor,tx:%s wethWithdrawal method from:%s, to:%s, value:%s", event.TxHash.Hex(), event.From.Hex(), event.To.Hex(), event.Amount.String())
 
-	return
+	return event, nil
 }

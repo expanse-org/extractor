@@ -88,10 +88,10 @@ func (e EventData) afterUnpack() error {
 		if err != nil {
 			return err
 		}
-		ringTopic := emit.Topic(e.Name, false, false)
+		ringTopic := emit.RingMinedTopic(false)
 		emit.Emit(ringTopic, ringmined)
 
-		fillTopic := emit.Topic(e.Name, true, false)
+		fillTopic := emit.RingMinedTopic(true)
 		for _, fill := range fills {
 			emit.Emit(fillTopic, fill)
 		}
@@ -131,7 +131,7 @@ func (e EventData) afterUnpack() error {
 		return err
 	}
 
-	topic := emit.Topic(e.Name, false, false)
+	topic := emit.Topic(e.Name)
 	return emit.Emit(topic, event)
 }
 

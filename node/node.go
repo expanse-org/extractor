@@ -82,7 +82,7 @@ func (n *Node) registerAccessor() {
 	if err := accessor.Initialize(n.globalConfig.Accessor); err != nil {
 		log.Fatalf("node start, register accessor error:%s", err.Error())
 	}
-	if err := loopringaccessor.InitLoopringAccessor(n.globalConfig.LoopringProtocol); err != nil {
+	if err := loopringaccessor.Initialize(n.globalConfig.LoopringProtocol); err != nil {
 		log.Fatalf("node start, register loopring accessor error:%s", err.Error())
 	}
 }

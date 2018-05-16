@@ -237,7 +237,7 @@ func (l *ExtractorServiceImpl) ProcessPendingTransaction(tx *ethtyp.Transaction)
 		return l.ProcessMethod(tx, nil, blockTime)
 	}
 
-	return l.processor.handleEthTransfer(tx, nil, blockTime)
+	return handleOtherTransaction(tx, nil, blockTime)
 }
 
 func (l *ExtractorServiceImpl) ProcessMinedTransaction(tx *ethtyp.Transaction, receipt *ethtyp.TransactionReceipt, blockTime *big.Int) error {
@@ -251,7 +251,7 @@ func (l *ExtractorServiceImpl) ProcessMinedTransaction(tx *ethtyp.Transaction, r
 		return l.ProcessMethod(tx, receipt, blockTime)
 	}
 
-	return l.processor.handleEthTransfer(tx, receipt, blockTime)
+	return handleOtherTransaction(tx, receipt, blockTime)
 }
 
 func (l *ExtractorServiceImpl) ProcessMethod(tx *ethtyp.Transaction, receipt *ethtyp.TransactionReceipt, blockTime *big.Int) error {
