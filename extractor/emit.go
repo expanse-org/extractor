@@ -16,11 +16,12 @@
 
 */
 
-package emit
+package extractor
 
 import (
 	"fmt"
 	"github.com/Loopring/relay-lib/eth/contract"
+	"github.com/Loopring/relay-lib/eth/types"
 	"github.com/Loopring/relay-lib/kafka"
 	"github.com/Loopring/relay-lib/zklock"
 )
@@ -109,9 +110,56 @@ func EthTxTopic(isTransfer bool) string {
 	return kafka.UnsupportedContract
 }
 
+func NewBlockTopic(isFinished bool) string {
+	if isFinished {
+		return kafka.Block_End
+	}
+	return kafka.Block_New
+}
+
+func ForkEventTopic() string { return kafka.ExtractorFork }
+
+func SyncCompleteTopic() string { return kafka.SyncChainComplete }
+
 const (
-	ZKNAME_EXTRACTOR = "extractor"
+	ZKNAME_EXTRACTOR     = "extractor"
+	KAFKA_CONSUMER_TOPIC = kafka.PendingTransaction
+	KAFKA_CONSUMER_GROUP = "extractor_pending_transaction"
 )
+
+var (
+	producer *kafka.MessageProducer
+	register *kafka.ConsumerRegister
+)
+
+func RegistryEmitter(zkOpt zklock.ZkLockConfig, producerOpt, consumerOpt kafka.KafkaOptions, service ExtractorService) error {
+	if _, err := zklock.Initialize(zkOpt); err != nil {
+		return err
+	}
+
+	brokers := producerOpt.Brokers
+	producer = &kafka.MessageProducer{}
+	if err := producer.Initialize(brokers); err != nil {
+		return err
+	}
+
+	if len(consumerOpt.Brokers) < 1 {
+		return fmt.Errorf("kafka consumer brokers should not be empty")
+	}
+	register = &kafka.ConsumerRegister{}
+	register.Initialize(consumerOpt.Brokers[0])
+	if err := register.RegisterTopicAndHandler(KAFKA_CONSUMER_TOPIC, KAFKA_CONSUMER_GROUP, types.Transaction{}, service.WatchingPendingTransaction); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func UnRegistryEmitter() {
+	zklock.ReleaseLock(ZKNAME_EXTRACTOR)
+	producer.Close()
+	register.Close()
+}
 
 func Produce(topic string, event interface{}) error {
 	zklock.TryLock(ZKNAME_EXTRACTOR)
@@ -121,10 +169,11 @@ func Produce(topic string, event interface{}) error {
 	}
 
 	// todo 对接kafka
-	//kafka.Produce(topic, event)
+	producer.SendMessage(topic, event, nextKey(topic))
 	return nil
 }
 
-func Consume() error {
-	return nil
+// todo
+func nextKey(topic string) string {
+	return ""
 }

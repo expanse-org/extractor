@@ -24,7 +24,6 @@ import (
 	"github.com/Loopring/relay-lib/eth/accessor"
 	"github.com/Loopring/relay-lib/eth/contract"
 	ethtyp "github.com/Loopring/relay-lib/eth/types"
-	"github.com/Loopring/relay-lib/eventemitter"
 	"github.com/Loopring/relay-lib/log"
 	"github.com/Loopring/relay-lib/types"
 	"math/big"
@@ -46,6 +45,7 @@ type ExtractorService interface {
 	Start()
 	Stop()
 	ForkProcess(block *types.Block) error
+	WatchingPendingTransaction(input interface{}) error
 }
 
 type ExtractorServiceImpl struct {
@@ -58,7 +58,6 @@ type ExtractorServiceImpl struct {
 	startBlockNumber *big.Int
 	endBlockNumber   *big.Int
 	iterator         *accessor.BlockIterator
-	pendingTxWatcher *eventemitter.Watcher
 	syncComplete     bool
 	forkComplete     bool
 }
@@ -85,14 +84,11 @@ func NewExtractorService(options ExtractorOptions, db dao.RdsService) *Extractor
 	l.stop = make(chan bool, 1)
 	l.setBlockNumberRange()
 
-	l.pendingTxWatcher = &eventemitter.Watcher{Concurrent: false, Handle: l.WatchingPendingTransaction}
-	eventemitter.On(eventemitter.PendingTransaction, l.pendingTxWatcher)
-
 	return &l
 }
 
 func (l *ExtractorServiceImpl) Start() {
-	log.Infof("extractor start from block:%s...", l.startBlockNumber.String())
+	log.Infof("extractor started! scanning block:%s......", l.startBlockNumber.String())
 	l.syncComplete = false
 
 	l.iterator = accessor.NewBlockIterator(l.startBlockNumber, l.endBlockNumber, true, l.options.ConfirmBlockNumber)
@@ -132,7 +128,7 @@ func (l *ExtractorServiceImpl) ForkProcess(currentBlock *types.Block) error {
 	l.Stop()
 
 	// emit event
-	eventemitter.Emit(eventemitter.ChainForkDetected, forkEvent)
+	Produce(ForkEventTopic(), forkEvent)
 
 	// reset start blockNumber
 	l.startBlockNumber = new(big.Int).Add(forkEvent.ForkBlock, big.NewInt(1))
@@ -152,7 +148,7 @@ func (l *ExtractorServiceImpl) Sync(blockNumber *big.Int) {
 	}
 	currentBlockNumber := new(big.Int).Add(blockNumber, big.NewInt(int64(l.options.ConfirmBlockNumber)))
 	if syncBlock.BigInt().Cmp(currentBlockNumber) <= 0 {
-		eventemitter.Emit(eventemitter.SyncChainComplete, syncBlock)
+		Produce(SyncCompleteTopic(), syncBlock)
 		l.syncComplete = true
 		log.Info("extractor,Sync chain block complete!")
 	} else {
@@ -164,11 +160,9 @@ func (l *ExtractorServiceImpl) Sync(blockNumber *big.Int) {
 func (l *ExtractorServiceImpl) Warning(err error) {
 	l.Stop()
 	log.Warnf("extractor, warning:%s", err.Error())
-	var event types.ExtractorWarningEvent
-	eventemitter.Emit(eventemitter.ExtractorWarning, &event)
 }
 
-func (l *ExtractorServiceImpl) WatchingPendingTransaction(input eventemitter.EventData) error {
+func (l *ExtractorServiceImpl) WatchingPendingTransaction(input interface{}) error {
 	tx := input.(*ethtyp.Transaction)
 	if err := l.ProcessPendingTransaction(tx); err != nil {
 		log.Errorf("extractor, watching pending transaction error:%s", err.Error())
@@ -212,7 +206,7 @@ func (l *ExtractorServiceImpl) ProcessBlock() error {
 	blockEvent.BlockNumber = block.Number.BigInt()
 	blockEvent.BlockHash = block.Hash
 	blockEvent.BlockTime = block.Timestamp.Int64()
-	eventemitter.Emit(eventemitter.Block_New, blockEvent)
+	Produce(NewBlockTopic(false), blockEvent)
 
 	if len(block.Transactions) > 0 {
 		for idx, transaction := range block.Transactions {
@@ -224,7 +218,7 @@ func (l *ExtractorServiceImpl) ProcessBlock() error {
 		}
 	}
 
-	eventemitter.Emit(eventemitter.Block_End, blockEvent)
+	Produce(NewBlockTopic(true), blockEvent)
 	return nil
 }
 

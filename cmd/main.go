@@ -109,8 +109,6 @@ func startNode(ctx *cli.Context) error {
 
 	n.Start()
 
-	log.Info("extractor started!")
-
 	n.Wait()
 	return nil
 }

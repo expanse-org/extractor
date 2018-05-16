@@ -19,15 +19,12 @@
 package node
 
 import (
-	"sync"
-
 	"github.com/Loopring/extractor/dao"
 	"github.com/Loopring/extractor/extractor"
 	"github.com/Loopring/relay-lib/cache"
 	"github.com/Loopring/relay-lib/eth/accessor"
 	"github.com/Loopring/relay-lib/eth/loopringaccessor"
 	"github.com/Loopring/relay-lib/log"
-	"github.com/Loopring/relay-lib/zklock"
 	"go.uber.org/zap"
 )
 
@@ -35,10 +32,8 @@ type Node struct {
 	globalConfig *GlobalConfig
 	rdsService   dao.RdsService
 	extractor    extractor.ExtractorService
-
-	stop   chan bool
-	lock   sync.RWMutex
-	logger *zap.Logger
+	stop         chan bool
+	logger       *zap.Logger
 }
 
 func NewNode(logger *zap.Logger, globalConfig *GlobalConfig) *Node {
@@ -48,9 +43,9 @@ func NewNode(logger *zap.Logger, globalConfig *GlobalConfig) *Node {
 
 	n.registerCache()
 	n.registerMysql()
-	n.registerZkLock()
 	n.registerAccessor()
 	n.registerExtractor()
+	n.registerEmitter()
 
 	return n
 }
@@ -60,15 +55,12 @@ func (n *Node) Start() {
 }
 
 func (n *Node) Wait() {
-	n.lock.RLock()
-
-	stop := n.stop
-	n.lock.RUnlock()
-
-	<-stop
+	//n.stop = make(chan bool)
+	<-n.stop
 }
 
 func (n *Node) Stop() {
+	extractor.UnRegistryEmitter()
 }
 
 func (n *Node) registerCache() {
@@ -92,8 +84,8 @@ func (n *Node) registerExtractor() {
 	n.extractor = extractor.NewExtractorService(n.globalConfig.Extractor, n.rdsService)
 }
 
-func (n *Node) registerZkLock() {
-	if _, err := zklock.Initialize(n.globalConfig.ZkLock); err != nil {
-		log.Fatalf("node start, register zklock error:%s", err.Error())
+func (n *Node) registerEmitter() {
+	if err := extractor.RegistryEmitter(n.globalConfig.ZkLock, n.globalConfig.KafkaProducer, n.globalConfig.KafkaConsumer, n.extractor); err != nil {
+		log.Fatalf("node start, register emitter error:%s", err.Error())
 	}
 }

@@ -19,7 +19,6 @@
 package extractor
 
 import (
-	"github.com/Loopring/extractor/emit"
 	"github.com/Loopring/relay-lib/eth/abi"
 	"github.com/Loopring/relay-lib/eth/contract"
 	ethtyp "github.com/Loopring/relay-lib/eth/types"
@@ -88,12 +87,12 @@ func (e EventData) afterUnpack() error {
 		if err != nil {
 			return err
 		}
-		ringTopic := emit.RingMinedTopic(false)
-		emit.Produce(ringTopic, ringmined)
+		ringTopic := RingMinedTopic(false)
+		Produce(ringTopic, ringmined)
 
-		fillTopic := emit.RingMinedTopic(true)
+		fillTopic := RingMinedTopic(true)
 		for _, fill := range fills {
-			emit.Produce(fillTopic, fill)
+			Produce(fillTopic, fill)
 		}
 	}
 
@@ -131,8 +130,8 @@ func (e EventData) afterUnpack() error {
 		return err
 	}
 
-	topic := emit.Topic(e.Name)
-	return emit.Produce(topic, event)
+	topic := Topic(e.Name)
+	return Produce(topic, event)
 }
 
 func (e EventData) getRingMinedEvents() (*types.RingMinedEvent, []*types.OrderFilledEvent, error) {

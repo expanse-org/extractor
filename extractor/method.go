@@ -20,7 +20,6 @@ package extractor
 
 import (
 	"fmt"
-	"github.com/Loopring/extractor/emit"
 	"github.com/Loopring/relay-lib/eth/abi"
 	"github.com/Loopring/relay-lib/eth/contract"
 	ethtyp "github.com/Loopring/relay-lib/eth/types"
@@ -115,8 +114,8 @@ func (m *MethodData) afterUnpack() error {
 		return err
 	}
 
-	topic := emit.Topic(m.Name)
-	return emit.Produce(topic, event)
+	topic := Topic(m.Name)
+	return Produce(topic, event)
 }
 
 func (m *MethodData) getSubmitRingEvent() (*types.SubmitRingMethodEvent, error) {
@@ -137,7 +136,7 @@ func (m *MethodData) getSubmitRingEvent() (*types.SubmitRingMethodEvent, error) 
 	// set txinfo for event
 	event.TxInfo = m.TxInfo
 	if event.Status == types.TX_STATUS_FAILED {
-		event.Err = fmt.Errorf("method %s transaction failed", contract.METHOD_SUBMIT_RING)
+		event.Err = fmt.Sprintf("method %s transaction failed", contract.METHOD_SUBMIT_RING)
 	}
 
 	// 不需要发送订单到gateway
