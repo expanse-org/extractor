@@ -30,13 +30,13 @@ import (
 
 type forkDetector struct {
 	db          dao.RdsService
-	latestBlock *types.Block
+	latestBlock *ethtyp.Block
 }
 
 func newForkDetector(db dao.RdsService, startBlockConfig *big.Int) *forkDetector {
 	detector := &forkDetector{}
 	detector.db = db
-	detector.latestBlock = &types.Block{}
+	detector.latestBlock = &ethtyp.Block{}
 
 	if entity, err := detector.db.FindLatestBlock(); err == nil {
 		entity.ConvertUp(detector.latestBlock)

@@ -49,19 +49,18 @@ func newMethodData(method *abi.Method, cabi *abi.ABI) MethodData {
 }
 
 // UnpackMethod v should be ptr
-func (m MethodData) handleMethod(tx *ethtyp.Transaction, gasUsed, blockTime *big.Int, status types.TxStatus, methodName string) (err error) {
-	var event interface{}
-	if err = m.beforeUnpack(tx, gasUsed, blockTime, status, methodName); err != nil {
-		return
+func (m MethodData) handleMethod(tx *ethtyp.Transaction, gasUsed, blockTime *big.Int, status types.TxStatus, methodName string) error {
+	if err := m.beforeUnpack(tx, gasUsed, blockTime, status, methodName); err != nil {
+		return err
 	}
-	if err = m.unpack(tx); err != nil {
-		return
+	if err := m.unpack(tx); err != nil {
+		return err
 	}
-	if event, err = m.afterUnpack(); err != nil {
-		return
+	if err := m.afterUnpack(); err != nil {
+		return err
 	}
 
-	return Emit(m.Name, event)
+	return nil
 }
 
 // beforeUnpack full fill method txinfo and set status...
@@ -80,36 +79,47 @@ func (m MethodData) beforeUnpack(tx *ethtyp.Transaction, gasUsed, blockTime *big
 	return err
 }
 
-// afterUnpack set special fields in internal event
-func (m MethodData) afterUnpack() (event interface{}, err error) {
-	switch m.Name {
-	case contract.METHOD_SUBMIT_RING:
-		event, err = m.fullFillSubmitRing()
-	case contract.METHOD_CANCEL_ORDER:
-		event, err = m.fullFillCancelOrder()
-	case contract.METHOD_CUTOFF_ALL:
-		event, err = m.fullFillCutoffAll()
-	case contract.METHOD_CUTOFF_PAIR:
-		event, err = m.fullFillCutoffPair()
-	case contract.METHOD_APPROVE:
-		event, err = m.fullFillApprove()
-	case contract.METHOD_TRANSFER:
-		event, err = m.fullFillTransfer()
-	case contract.METHOD_WETH_DEPOSIT:
-		event, err = m.fullFillDeposit()
-	case contract.METHOD_WETH_WITHDRAWAL:
-		event, err = m.fullFillWithdrawal()
-	}
-	return
-}
-
 func (m MethodData) unpack(tx *ethtyp.Transaction) (err error) {
 	data := hexutil.MustDecode("0x" + tx.Input[10:])
 	err = m.Abi.Unpack(m.Method, m.Name, data, [][]byte{})
 	return err
 }
 
-func (m MethodData) fullFillSubmitRing() (event *types.SubmitRingMethodEvent, err error) {
+// afterUnpack set special fields in internal event
+func (m MethodData) afterUnpack() error {
+	var (
+		event interface{}
+		err error
+	)
+
+	switch m.Name {
+	case contract.METHOD_SUBMIT_RING:
+		event, err = m.getSubmitRingEvent()
+	case contract.METHOD_CANCEL_ORDER:
+		event, err = m.getOrderCancelledEvent()
+	case contract.METHOD_CUTOFF_ALL:
+		event, err = m.getCutoffAllEvent()
+	case contract.METHOD_CUTOFF_PAIR:
+		event, err = m.getCutoffPairEvent()
+	case contract.METHOD_APPROVE:
+		event, err = m.getApproveEvent()
+	case contract.METHOD_TRANSFER:
+		event, err = m.getTransferEvent()
+	case contract.METHOD_WETH_DEPOSIT:
+		event, err = m.getDepositEvent()
+	case contract.METHOD_WETH_WITHDRAWAL:
+		event, err = m.getWithdrawalEvent()
+	}
+
+	if err != nil {
+		return err
+	}
+
+	topic := getTopic(m.Name, false, false)
+	return Emit(topic, event)
+}
+
+func (m MethodData) getSubmitRingEvent() (event *types.SubmitRingMethodEvent, err error) {
 	src, ok := m.Method.(*contract.SubmitRingMethodInputs)
 	if !ok {
 		return nil, fmt.Errorf("submitRing method inputs type error")
@@ -137,7 +147,7 @@ func (m MethodData) fullFillSubmitRing() (event *types.SubmitRingMethodEvent, er
 	return event, nil
 }
 
-func (m MethodData) fullFillCancelOrder() (event *types.OrderCancelledEvent, err error) {
+func (m MethodData) getOrderCancelledEvent() (event *types.OrderCancelledEvent, err error) {
 	src, ok := m.Method.(*contract.CancelOrderMethod)
 	if !ok {
 		return nil, fmt.Errorf("cancelOrder method inputs type error")
@@ -159,7 +169,7 @@ func (m MethodData) fullFillCancelOrder() (event *types.OrderCancelledEvent, err
 	return tmCancelEvent, nil
 }
 
-func (m MethodData) fullFillCutoffAll() (event *types.CutoffEvent, err error) {
+func (m MethodData) getCutoffAllEvent() (event *types.CutoffEvent, err error) {
 	src, ok := m.Method.(*contract.CutoffMethod)
 	if !ok {
 		return nil, fmt.Errorf("cutoffAll method inputs type error")
@@ -173,7 +183,7 @@ func (m MethodData) fullFillCutoffAll() (event *types.CutoffEvent, err error) {
 	return event, err
 }
 
-func (m MethodData) fullFillCutoffPair() (event *types.CutoffPairEvent, err error) {
+func (m MethodData) getCutoffPairEvent() (event *types.CutoffPairEvent, err error) {
 	src, ok := m.Method.(*contract.CutoffPairMethod)
 	if !ok {
 		return nil, fmt.Errorf("cutoffPair method inputs type error")
@@ -188,7 +198,7 @@ func (m MethodData) fullFillCutoffPair() (event *types.CutoffPairEvent, err erro
 	return
 }
 
-func (m MethodData) fullFillApprove() (event *types.ApprovalEvent, err error) {
+func (m MethodData) getApproveEvent() (event *types.ApprovalEvent, err error) {
 	src, ok := m.Method.(*contract.ApproveMethod)
 	if !ok {
 		return nil, fmt.Errorf("approve method inputs type error")
@@ -203,7 +213,7 @@ func (m MethodData) fullFillApprove() (event *types.ApprovalEvent, err error) {
 	return
 }
 
-func (m MethodData) fullFillTransfer() (event *types.TransferEvent, err error) {
+func (m MethodData) getTransferEvent() (event *types.TransferEvent, err error) {
 	src := m.Method.(*contract.TransferMethod)
 
 	event = src.ConvertDown()
@@ -215,7 +225,7 @@ func (m MethodData) fullFillTransfer() (event *types.TransferEvent, err error) {
 	return
 }
 
-func (m MethodData) fullFillDeposit() (event *types.WethDepositEvent, err error) {
+func (m MethodData) getDepositEvent() (event *types.WethDepositEvent, err error) {
 	event.Dst = m.From
 	event.Amount = m.Value
 	event.TxInfo = m.TxInfo
@@ -225,7 +235,7 @@ func (m MethodData) fullFillDeposit() (event *types.WethDepositEvent, err error)
 	return
 }
 
-func (m MethodData) fullFillWithdrawal() (event *types.WethWithdrawalEvent, err error) {
+func (m MethodData) getWithdrawalEvent() (event *types.WethWithdrawalEvent, err error) {
 	src, ok := m.Method.(*contract.WethWithdrawalMethod)
 	if !ok {
 		return nil, fmt.Errorf("wethWithdrawal method inputs type error")

@@ -19,7 +19,6 @@
 package extractor
 
 import (
-	"fmt"
 	"github.com/Loopring/relay-lib/eth/abi"
 	"github.com/Loopring/relay-lib/eth/contract"
 	ethtyp "github.com/Loopring/relay-lib/eth/types"
@@ -48,55 +47,27 @@ func newEventData(event *abi.Event, cabi *abi.ABI) EventData {
 	return c
 }
 
-func (e EventData) handleEvent(tx *ethtyp.Transaction, evtLog *ethtyp.Log, gasUsed, blockTime *big.Int, methodName string) (err error) {
-	var event interface{}
-
-	if err = e.beforeUnpack(tx, evtLog, gasUsed, blockTime, methodName); err != nil {
-		return
+func (e EventData) handleEvent(tx *ethtyp.Transaction, evtLog *ethtyp.Log, gasUsed, blockTime *big.Int, methodName string) error {
+	if err := e.beforeUnpack(tx, evtLog, gasUsed, blockTime, methodName); err != nil {
+		return err
 	}
-	if err = e.unpack(evtLog); err != nil {
-		return
+	if err := e.unpack(evtLog); err != nil {
+		return err
 	}
-	if event, err = e.afterUnpack(); err != nil {
-		return
+	if err := e.afterUnpack(); err != nil {
+		return err
 	}
 
-	return Emit(e.Name, event)
+	return nil
 }
 
-func (e EventData) beforeUnpack(tx *ethtyp.Transaction, evtLog *ethtyp.Log, gasUsed, blockTime *big.Int, methodName string) (err error) {
+func (e EventData) beforeUnpack(tx *ethtyp.Transaction, evtLog *ethtyp.Log, gasUsed, blockTime *big.Int, methodName string) error {
 	e.TxInfo = setTxInfo(tx, gasUsed, blockTime, methodName)
 	e.Protocol = common.HexToAddress(evtLog.Address)
 	e.TxLogIndex = evtLog.LogIndex.Int64()
 	e.Status = types.TX_STATUS_SUCCESS
 
-	switch e.Name {
-	case contract.EVENT_RING_MINED:
-		if _, ok := e.Event.(*contract.RingMinedEvent); !ok {
-			return fmt.Errorf("tx:%s, ringMined event data type error", tx.Hash)
-		}
-
-	case contract.EVENT_ORDER_CANCELLED:
-		if _, ok := e.Event.(*contract.OrderCancelledEvent); !ok {
-			return fmt.Errorf("tx:%s, orderCancelled event data type error", tx.Hash)
-		}
-
-	case contract.EVENT_CUTOFF_ALL:
-		if _, ok := e.Event.(*contract.CutoffEvent); !ok {
-			return fmt.Errorf("tx:%s, cutoffAll event data type error", tx.Hash)
-		}
-
-	case contract.EVENT_CUTOFF_PAIR:
-		if _, ok := e.Event.(*contract.CutoffPairEvent); !ok {
-			return fmt.Errorf("tx:%s, cutoffPair event data type error", tx.Hash)
-		}
-	}
-
-	return
-}
-
-func (e EventData) afterUnpack() ([]interface{}, error) {
-
+	return nil
 }
 
 func (e EventData) unpack(evtLog *ethtyp.Log) (err error) {
@@ -107,6 +78,61 @@ func (e EventData) unpack(evtLog *ethtyp.Log) (err error) {
 		decodedValues = append(decodedValues, decodeBytes)
 	}
 	return e.Abi.Unpack(e.Event, e.Name, data, decodedValues)
+}
+
+func (e EventData) afterUnpack() error {
+
+	if e.Name == contract.EVENT_RING_MINED {
+		ringmined, fills, err := e.getRingMinedEvents()
+		if err != nil {
+			return err
+		}
+		ringTopic := getTopic(e.Name, false, false)
+		Emit(ringTopic, ringmined)
+
+		fillTopic := getTopic(e.Name, true, false)
+		for _, fill := range fills {
+			Emit(fillTopic, fill)
+		}
+	}
+
+
+	var (
+		event interface{}
+		err error
+	)
+
+	switch e.Name {
+	case contract.EVENT_ORDER_CANCELLED:
+		event, err = e.getOrderCancelledEvent()
+	case contract.EVENT_CUTOFF_ALL:
+		event, err = e.getCutoffAllEvent()
+	case contract.EVENT_CUTOFF_PAIR:
+		event, err = e.getCutoffPairEvent()
+	case contract.EVENT_TRANSFER:
+		event, err = e.getTransferEvent()
+	case contract.EVENT_APPROVAL:
+		event, err = e.getApprovalEvent()
+	case contract.EVENT_WETH_DEPOSIT:
+		event, err = e.getDepositEvent()
+	case contract.EVENT_WETH_WITHDRAWAL:
+		event, err = e.getWithdrawalEvent()
+	case contract.EVENT_TOKEN_REGISTERED:
+		event, err = e.getTokenRegisteredEvent()
+	case contract.EVENT_TOKEN_UNREGISTERED:
+		event, err = e.getTokenUnRegisteredEvent()
+	case contract.EVENT_ADDRESS_AUTHORIZED:
+		event, err = e.getAddressAuthorizedEvent()
+	case contract.EVENT_ADDRESS_DEAUTHORIZED:
+		event, err = e.getAddressDeAuthorizedEvent()
+	}
+
+	if err != nil {
+		return err
+	}
+
+	topic := getTopic(e.Name, false, false)
+	return Emit(topic, event)
 }
 
 func (e EventData) getRingMinedEvents() (*types.RingMinedEvent, []*types.OrderFilledEvent, error) {
