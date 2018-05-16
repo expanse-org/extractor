@@ -21,7 +21,8 @@ package emit
 import (
 	"fmt"
 	"github.com/Loopring/relay-lib/eth/contract"
-	eventemitter "github.com/Loopring/relay-lib/kafka"
+	"github.com/Loopring/relay-lib/kafka"
+	"github.com/Loopring/relay-lib/zklock"
 )
 
 func Topic(name string) string {
@@ -30,62 +31,62 @@ func Topic(name string) string {
 	switch name {
 	// methods
 	case contract.METHOD_SUBMIT_RING:
-		topic = eventemitter.Miner_SubmitRing_Method
+		topic = kafka.Miner_SubmitRing_Method
 
 	case contract.METHOD_CANCEL_ORDER:
-		topic = eventemitter.CancelOrder
+		topic = kafka.CancelOrder
 
 	case contract.METHOD_CUTOFF_ALL:
-		topic = eventemitter.CutoffAll
+		topic = kafka.CutoffAll
 
 	case contract.METHOD_CUTOFF_PAIR:
-		topic = eventemitter.CutoffPair
+		topic = kafka.CutoffPair
 
 	case contract.METHOD_APPROVE:
-		topic = eventemitter.Approve
+		topic = kafka.Approve
 
 	case contract.METHOD_TRANSFER:
-		topic = eventemitter.Transfer
+		topic = kafka.Transfer
 
 	case contract.METHOD_WETH_DEPOSIT:
-		topic = eventemitter.WethDeposit
+		topic = kafka.WethDeposit
 
 	case contract.METHOD_WETH_WITHDRAWAL:
-		topic = eventemitter.WethWithdrawal
+		topic = kafka.WethWithdrawal
 
 	// events
 	case contract.EVENT_ORDER_CANCELLED:
-		topic = eventemitter.CancelOrder
+		topic = kafka.CancelOrder
 
 	case contract.EVENT_CUTOFF_ALL:
-		topic = eventemitter.CutoffAll
+		topic = kafka.CutoffAll
 
 	case contract.EVENT_CUTOFF_PAIR:
-		topic = eventemitter.CutoffPair
+		topic = kafka.CutoffPair
 
 	case contract.EVENT_TRANSFER:
-		topic = eventemitter.Transfer
+		topic = kafka.Transfer
 
 	case contract.EVENT_APPROVAL:
-		topic = eventemitter.Approve
+		topic = kafka.Approve
 
 	case contract.EVENT_WETH_DEPOSIT:
-		topic = eventemitter.WethDeposit
+		topic = kafka.WethDeposit
 
 	case contract.EVENT_WETH_WITHDRAWAL:
-		topic = eventemitter.WethWithdrawal
+		topic = kafka.WethWithdrawal
 
 	case contract.EVENT_TOKEN_REGISTERED:
-		topic = eventemitter.TokenRegistered
+		topic = kafka.TokenRegistered
 
 	case contract.EVENT_TOKEN_UNREGISTERED:
-		topic = eventemitter.TokenUnRegistered
+		topic = kafka.TokenUnRegistered
 
 	case contract.EVENT_ADDRESS_AUTHORIZED:
-		topic = eventemitter.AddressAuthorized
+		topic = kafka.AddressAuthorized
 
 	case contract.EVENT_ADDRESS_DEAUTHORIZED:
-		topic = eventemitter.AddressAuthorized
+		topic = kafka.AddressAuthorized
 
 	default:
 		topic = ""
@@ -96,24 +97,34 @@ func Topic(name string) string {
 
 func RingMinedTopic(isFill bool) string {
 	if isFill {
-		return eventemitter.OrderFilled
+		return kafka.OrderFilled
 	}
-	return eventemitter.RingMined
+	return kafka.RingMined
 }
 
 func EthTxTopic(isTransfer bool) string {
 	if isTransfer {
-		return eventemitter.EthTransfer
+		return kafka.EthTransfer
 	}
-	return eventemitter.UnsupportedContract
+	return kafka.UnsupportedContract
 }
 
-func Emit(topic string, event interface{}) error {
+const (
+	ZKNAME_EXTRACTOR = "extractor"
+)
+
+func Produce(topic string, event interface{}) error {
+	zklock.TryLock(ZKNAME_EXTRACTOR)
+
 	if topic == "" {
 		return fmt.Errorf("emit topic is empty")
 	}
 
 	// todo 对接kafka
-	//eventemitter.Emit(topic, event)
+	//kafka.Produce(topic, event)
+	return nil
+}
+
+func Consume() error {
 	return nil
 }

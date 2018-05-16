@@ -116,7 +116,7 @@ func (m *MethodData) afterUnpack() error {
 	}
 
 	topic := emit.Topic(m.Name)
-	return emit.Emit(topic, event)
+	return emit.Produce(topic, event)
 }
 
 func (m *MethodData) getSubmitRingEvent() (*types.SubmitRingMethodEvent, error) {
@@ -144,7 +144,7 @@ func (m *MethodData) getSubmitRingEvent() (*types.SubmitRingMethodEvent, error) 
 	//for _, v := range event.OrderList {
 	//	v.Hash = v.GenerateHash()
 	//	log.Debugf("extractor,tx:%s submitRing method orderHash:%s,owner:%s,tokenS:%s,tokenB:%s,amountS:%s,amountB:%s", event.TxHash.Hex(), v.Hash.Hex(), v.Owner.Hex(), v.TokenS.Hex(), v.TokenB.Hex(), v.AmountS.String(), v.AmountB.String())
-	//	eventemitter.Emit(eventemitter.GatewayNewOrder, v)
+	//	eventemitter.Produce(eventemitter.GatewayNewOrder, v)
 	//}
 
 	log.Debugf("extractor,tx:%s submitRing method gas:%s, gasprice:%s, status:%s", event.TxHash.Hex(), event.GasUsed.String(), event.GasPrice.String(), types.StatusStr(event.Status))

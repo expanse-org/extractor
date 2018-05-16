@@ -28,6 +28,7 @@ import (
 	libdao "github.com/Loopring/relay-lib/dao"
 	"github.com/Loopring/relay-lib/eth/accessor"
 	lpraccssor "github.com/Loopring/relay-lib/eth/loopringaccessor"
+	"github.com/Loopring/relay-lib/zklock"
 	"github.com/naoina/toml"
 	"go.uber.org/zap"
 )
@@ -58,6 +59,7 @@ type GlobalConfig struct {
 	Log              LogOptions
 	Mysql            libdao.MysqlOptions
 	Redis            redis.RedisOptions
+	ZkLock           zklock.ZkLockConfig
 	Extractor        extractor.ExtractorOptions
 	Accessor         accessor.AccessorOptions
 	LoopringProtocol lpraccssor.LoopringProtocolOptions

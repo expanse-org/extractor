@@ -89,11 +89,11 @@ func (e EventData) afterUnpack() error {
 			return err
 		}
 		ringTopic := emit.RingMinedTopic(false)
-		emit.Emit(ringTopic, ringmined)
+		emit.Produce(ringTopic, ringmined)
 
 		fillTopic := emit.RingMinedTopic(true)
 		for _, fill := range fills {
-			emit.Emit(fillTopic, fill)
+			emit.Produce(fillTopic, fill)
 		}
 	}
 
@@ -132,7 +132,7 @@ func (e EventData) afterUnpack() error {
 	}
 
 	topic := emit.Topic(e.Name)
-	return emit.Emit(topic, event)
+	return emit.Produce(topic, event)
 }
 
 func (e EventData) getRingMinedEvents() (*types.RingMinedEvent, []*types.OrderFilledEvent, error) {

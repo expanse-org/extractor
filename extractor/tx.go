@@ -73,7 +73,7 @@ func handleOtherTransaction(tx *ethtyp.Transaction, receipt *ethtyp.TransactionR
 		log.Debugf("extractor,tx:%s handleEthTransfer sender:%s, receiver:%s, value:%s, gasUsed:%s, status:%d", event.TxHash.Hex(), event.Sender.Hex(), event.Receiver.Hex(), event.Amount.String(), event.GasUsed.String(), event.Status)
 
 		topic := emit.EthTxTopic(true)
-		return emit.Emit(topic, &event)
+		return emit.Produce(topic, &event)
 	} else {
 		event := &types.TransactionEvent{}
 		event.TxInfo = txinfo
@@ -83,7 +83,7 @@ func handleOtherTransaction(tx *ethtyp.Transaction, receipt *ethtyp.TransactionR
 		log.Debugf("extractor,tx:%s handleOtherTransaction from:%s, to:%s, gasUsed:%s, status:%d", event.TxHash.Hex(), event.From.Hex(), event.To.Hex(), event.GasUsed.String(), event.Status)
 
 		topic := emit.EthTxTopic(false)
-		return emit.Emit(topic, &event)
+		return emit.Produce(topic, &event)
 	}
 }
 

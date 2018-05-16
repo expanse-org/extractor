@@ -27,6 +27,7 @@ import (
 	"github.com/Loopring/relay-lib/eth/accessor"
 	"github.com/Loopring/relay-lib/eth/loopringaccessor"
 	"github.com/Loopring/relay-lib/log"
+	"github.com/Loopring/relay-lib/zklock"
 	"go.uber.org/zap"
 )
 
@@ -45,9 +46,9 @@ func NewNode(logger *zap.Logger, globalConfig *GlobalConfig) *Node {
 	n.logger = logger
 	n.globalConfig = globalConfig
 
-	// register
 	n.registerCache()
 	n.registerMysql()
+	n.registerZkLock()
 	n.registerAccessor()
 	n.registerExtractor()
 
@@ -89,4 +90,8 @@ func (n *Node) registerAccessor() {
 
 func (n *Node) registerExtractor() {
 	n.extractor = extractor.NewExtractorService(n.globalConfig.Extractor, n.rdsService)
+}
+
+func (n *Node) registerZkLock() {
+	zklock.Initialize(n.globalConfig.ZkLock)
 }
