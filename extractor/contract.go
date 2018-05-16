@@ -19,7 +19,7 @@
 package extractor
 
 import (
-	contract "github.com/Loopring/relay-lib/eth/contract"
+	"github.com/Loopring/relay-lib/eth/contract"
 	lpraccessor "github.com/Loopring/relay-lib/eth/loopringaccessor"
 	ethtyp "github.com/Loopring/relay-lib/eth/types"
 	"github.com/Loopring/relay-lib/eventemitter"
@@ -129,20 +129,17 @@ func (processor *AbiProcessor) SupportedEvents(receipt *ethtyp.TransactionReceip
 
 // SupportedMethod only supported contracts method
 func (processor *AbiProcessor) SupportedMethod(tx *ethtyp.Transaction) bool {
-	if !processor.SupportedContract(common.HexToAddress(tx.To)) {
+	protocol := common.HexToAddress(tx.To)
+	if _, ok := processor.protocols[protocol]; !ok {
 		return false
 	}
+
 	id := tx.MethodId()
 	if id == "" {
 		return false
 	}
-	_, ok := processor.methods[id]
-	return ok
-}
 
-// HasSpender check approve spender address have ever been load
-func (processor *AbiProcessor) HasSpender(spender common.Address) bool {
-	_, ok := processor.delegates[spender]
+	_, ok := processor.methods[id]
 	return ok
 }
 
