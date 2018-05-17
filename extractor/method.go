@@ -114,8 +114,7 @@ func (m *MethodData) afterUnpack() error {
 		return err
 	}
 
-	topic := Topic(m.Name)
-	return Produce(topic, event)
+	return Produce(event)
 }
 
 func (m *MethodData) getSubmitRingEvent() (*types.SubmitRingMethodEvent, error) {

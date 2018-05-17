@@ -20,112 +20,18 @@ package extractor
 
 import (
 	"fmt"
-	"github.com/Loopring/relay-lib/eth/contract"
 	"github.com/Loopring/relay-lib/eth/types"
+	ex "github.com/Loopring/relay-lib/extractor"
 	"github.com/Loopring/relay-lib/kafka"
 	"github.com/Loopring/relay-lib/zklock"
 )
 
-func Topic(name string) string {
-	var topic string
-
-	switch name {
-	// methods
-	case contract.METHOD_SUBMIT_RING:
-		topic = kafka.Miner_SubmitRing_Method
-
-	case contract.METHOD_CANCEL_ORDER:
-		topic = kafka.CancelOrder
-
-	case contract.METHOD_CUTOFF_ALL:
-		topic = kafka.CutoffAll
-
-	case contract.METHOD_CUTOFF_PAIR:
-		topic = kafka.CutoffPair
-
-	case contract.METHOD_APPROVE:
-		topic = kafka.Approve
-
-	case contract.METHOD_TRANSFER:
-		topic = kafka.Transfer
-
-	case contract.METHOD_WETH_DEPOSIT:
-		topic = kafka.WethDeposit
-
-	case contract.METHOD_WETH_WITHDRAWAL:
-		topic = kafka.WethWithdrawal
-
-	// events
-	case contract.EVENT_ORDER_CANCELLED:
-		topic = kafka.CancelOrder
-
-	case contract.EVENT_CUTOFF_ALL:
-		topic = kafka.CutoffAll
-
-	case contract.EVENT_CUTOFF_PAIR:
-		topic = kafka.CutoffPair
-
-	case contract.EVENT_TRANSFER:
-		topic = kafka.Transfer
-
-	case contract.EVENT_APPROVAL:
-		topic = kafka.Approve
-
-	case contract.EVENT_WETH_DEPOSIT:
-		topic = kafka.WethDeposit
-
-	case contract.EVENT_WETH_WITHDRAWAL:
-		topic = kafka.WethWithdrawal
-
-	case contract.EVENT_TOKEN_REGISTERED:
-		topic = kafka.TokenRegistered
-
-	case contract.EVENT_TOKEN_UNREGISTERED:
-		topic = kafka.TokenUnRegistered
-
-	case contract.EVENT_ADDRESS_AUTHORIZED:
-		topic = kafka.AddressAuthorized
-
-	case contract.EVENT_ADDRESS_DEAUTHORIZED:
-		topic = kafka.AddressDeAuthorized
-
-	default:
-		topic = ""
-	}
-
-	return topic
-}
-
-func RingMinedTopic(isFill bool) string {
-	if isFill {
-		return kafka.OrderFilled
-	}
-	return kafka.RingMined
-}
-
-func EthTxTopic(isTransfer bool) string {
-	if isTransfer {
-		return kafka.EthTransfer
-	}
-	return kafka.UnsupportedContract
-}
-
-func NewBlockTopic(isFinished bool) string {
-	if isFinished {
-		return kafka.Block_End
-	}
-	return kafka.Block_New
-}
-
-func ForkEventTopic() string { return kafka.ExtractorFork }
-
-func SyncCompleteTopic() string { return kafka.SyncChainComplete }
-
 const (
-	ZKNAME_EXTRACTOR             = "extractor"
-	KAFKA_CONSUMER_TOPIC         = kafka.PendingTransaction
-	KAFKA_CONSUMER_GROUP         = "extractor_pending_transaction"
-	KAFKA_PRODUCER_PARTITION_KEY = "extractor"
+	ZKNAME_EXTRACTOR     = "extractor"
+	KAFKA_CONSUMER_TOPIC = kafka.Kafka_Topic_Extractor_PendingTransaction
+	KAFKA_CONSUMER_GROUP = kafka.Kafka_Group_Extractor_PendingTransaction
+	KAFKA_PRODUCER_TOPIC = kafka.Kafka_Topic_Extractor_EventOnChain
+	KAFKA_PRODUCER_KEY   = "extractor"
 )
 
 var (
@@ -165,11 +71,12 @@ func UnRegistryEmitter() {
 	register.Close()
 }
 
-func Produce(topic string, event interface{}) error {
-	if topic == "" {
+func Produce(src interface{}) error {
+	event, err := ex.Assemble(src)
+	if err != nil {
 		return fmt.Errorf("emit topic is empty")
 	}
 
-	producer.SendMessage(topic, event, KAFKA_PRODUCER_PARTITION_KEY)
+	producer.SendMessage(KAFKA_PRODUCER_TOPIC, event, KAFKA_PRODUCER_KEY)
 	return nil
 }

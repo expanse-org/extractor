@@ -128,7 +128,7 @@ func (l *ExtractorServiceImpl) ForkProcess(currentBlock *types.Block) error {
 	l.Stop()
 
 	// emit event
-	Produce(ForkEventTopic(), forkEvent)
+	Produce(forkEvent)
 
 	// reset start blockNumber
 	l.startBlockNumber = new(big.Int).Add(forkEvent.ForkBlock, big.NewInt(1))
@@ -148,7 +148,7 @@ func (l *ExtractorServiceImpl) Sync(blockNumber *big.Int) {
 	}
 	currentBlockNumber := new(big.Int).Add(blockNumber, big.NewInt(int64(l.options.ConfirmBlockNumber)))
 	if syncBlock.BigInt().Cmp(currentBlockNumber) <= 0 {
-		Produce(SyncCompleteTopic(), syncBlock)
+		Produce(syncBlock)
 		l.syncComplete = true
 		log.Info("extractor,Sync chain block complete!")
 	} else {
@@ -206,7 +206,8 @@ func (l *ExtractorServiceImpl) ProcessBlock() error {
 	blockEvent.BlockNumber = block.Number.BigInt()
 	blockEvent.BlockHash = block.Hash
 	blockEvent.BlockTime = block.Timestamp.Int64()
-	Produce(NewBlockTopic(false), blockEvent)
+	blockEvent.IsFinished = false
+	Produce(blockEvent)
 
 	if len(block.Transactions) > 0 {
 		for idx, transaction := range block.Transactions {
@@ -218,7 +219,8 @@ func (l *ExtractorServiceImpl) ProcessBlock() error {
 		}
 	}
 
-	Produce(NewBlockTopic(true), blockEvent)
+	blockEvent.IsFinished = true
+	Produce(blockEvent)
 	return nil
 }
 

@@ -61,7 +61,7 @@ func handleOtherTransaction(tx *ethtyp.Transaction, receipt *ethtyp.TransactionR
 	txinfo := setTxInfo(tx, gasUsed, time, contract.METHOD_UNKNOWN)
 
 	if tx.Value.BigInt().Cmp(big.NewInt(0)) > 0 {
-		event := &types.TransferEvent{}
+		event := &types.EthTransferEvent{}
 		event.TxInfo = txinfo
 		event.Amount = tx.Value.BigInt()
 		event.TxLogIndex = 0
@@ -71,16 +71,16 @@ func handleOtherTransaction(tx *ethtyp.Transaction, receipt *ethtyp.TransactionR
 
 		log.Debugf("extractor,tx:%s handleEthTransfer sender:%s, receiver:%s, value:%s, gasUsed:%s, status:%d", event.TxHash.Hex(), event.Sender.Hex(), event.Receiver.Hex(), event.Amount.String(), event.GasUsed.String(), event.Status)
 
-		return Produce(EthTxTopic(true), event)
+		return Produce(event)
 	} else {
-		event := &types.TransactionEvent{}
+		event := &types.UnsupportedContractEvent{}
 		event.TxInfo = txinfo
 		event.TxLogIndex = 0
 		event.Status = getStatus(tx, receipt)
 
-		log.Debugf("extractor,tx:%s handleOtherTransaction from:%s, to:%s, gasUsed:%s, status:%d", event.TxHash.Hex(), event.From.Hex(), event.To.Hex(), event.GasUsed.String(), event.Status)
+		log.Debugf("extractor,tx:%s handleUnSupportedContract from:%s, to:%s, gasUsed:%s, status:%d", event.TxHash.Hex(), event.From.Hex(), event.To.Hex(), event.GasUsed.String(), event.Status)
 
-		return Produce(EthTxTopic(false), event)
+		return Produce(event)
 	}
 }
 

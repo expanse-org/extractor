@@ -81,18 +81,15 @@ func (e EventData) unpack(evtLog *ethtyp.Log) (err error) {
 }
 
 func (e EventData) afterUnpack() error {
-
 	if e.Name == contract.EVENT_RING_MINED {
 		ringmined, fills, err := e.getRingMinedEvents()
 		if err != nil {
 			return err
 		}
-		ringTopic := RingMinedTopic(false)
-		Produce(ringTopic, ringmined)
+		Produce(ringmined)
 
-		fillTopic := RingMinedTopic(true)
 		for _, fill := range fills {
-			Produce(fillTopic, fill)
+			Produce(fill)
 		}
 	}
 
@@ -130,8 +127,7 @@ func (e EventData) afterUnpack() error {
 		return err
 	}
 
-	topic := Topic(e.Name)
-	return Produce(topic, event)
+	return Produce(event)
 }
 
 func (e EventData) getRingMinedEvents() (*types.RingMinedEvent, []*types.OrderFilledEvent, error) {
