@@ -61,9 +61,8 @@ func (n *Node) Wait() {
 	n.wg.Wait()
 }
 
-// todo:释放的时候wg.wait太久
 func (n *Node) Stop() {
-	//extractor.UnRegistryEmitter()
+	extractor.UnRegistryEmitter()
 	n.wg.Done()
 }
 
