@@ -122,9 +122,10 @@ func ForkEventTopic() string { return kafka.ExtractorFork }
 func SyncCompleteTopic() string { return kafka.SyncChainComplete }
 
 const (
-	ZKNAME_EXTRACTOR     = "extractor"
-	KAFKA_CONSUMER_TOPIC = kafka.PendingTransaction
-	KAFKA_CONSUMER_GROUP = "extractor_pending_transaction"
+	ZKNAME_EXTRACTOR             = "extractor"
+	KAFKA_CONSUMER_TOPIC         = kafka.PendingTransaction
+	KAFKA_CONSUMER_GROUP         = "extractor_pending_transaction"
+	KAFKA_PRODUCER_PARTITION_KEY = "extractor"
 )
 
 var (
@@ -134,6 +135,9 @@ var (
 
 func RegistryEmitter(zkOpt zklock.ZkLockConfig, producerOpt, consumerOpt kafka.KafkaOptions, service ExtractorService) error {
 	if _, err := zklock.Initialize(zkOpt); err != nil {
+		return err
+	}
+	if err := zklock.TryLock(ZKNAME_EXTRACTOR); err != nil {
 		return err
 	}
 
@@ -162,18 +166,10 @@ func UnRegistryEmitter() {
 }
 
 func Produce(topic string, event interface{}) error {
-	zklock.TryLock(ZKNAME_EXTRACTOR)
-
 	if topic == "" {
 		return fmt.Errorf("emit topic is empty")
 	}
 
-	// todo 对接kafka
-	producer.SendMessage(topic, event, nextKey(topic))
+	producer.SendMessage(topic, event, KAFKA_PRODUCER_PARTITION_KEY)
 	return nil
-}
-
-// todo
-func nextKey(topic string) string {
-	return ""
 }
