@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"github.com/Loopring/relay-lib/eventemitter"
 	"github.com/Loopring/relay-lib/kafka"
+	"github.com/Loopring/relay-lib/log"
 	"github.com/Loopring/relay-lib/types"
 )
 
@@ -34,15 +35,14 @@ type ExtractorService struct {
 
 const (
 	kafka_topic = kafka.Kafka_Topic_Extractor_EventOnChain
-	kafka_group = kafka.Kafka_Group_Extractor_EventOnChain
 )
 
-func Initialize(options kafka.KafkaOptions) error {
+func Initialize(options kafka.KafkaOptions, group string) error {
 	var serv ExtractorService
 
 	serv.consumer = &kafka.ConsumerRegister{}
-	serv.consumer.Initialize(options.Brokers[0])
-	if err := serv.consumer.RegisterTopicAndHandler(kafka_topic, kafka_group, types.KafkaOnChainEvent{}, serv.handle); err != nil {
+	serv.consumer.Initialize(options.Brokers)
+	if err := serv.consumer.RegisterTopicAndHandler(kafka_topic, group, types.KafkaOnChainEvent{}, serv.handle); err != nil {
 		return err
 	}
 
@@ -52,15 +52,19 @@ func Initialize(options kafka.KafkaOptions) error {
 func (s *ExtractorService) handle(input interface{}) error {
 	src, ok := input.(*types.KafkaOnChainEvent)
 	if !ok {
-		return fmt.Errorf("extractor,input type should be *KafkaOnChainEvent")
+		log.Errorf("extractor,input type should be *KafkaOnChainEvent")
+		return nil
 	}
 
 	event, err := Disassemble(src)
 	if err != nil {
+		log.Errorf("extractor, disassemble error:%s", err.Error())
 		return err
 	}
 
 	eventemitter.Emit(src.Topic, event)
+	log.Debugf("extractor, send to emitter topic:%s", src.Topic)
+
 	return nil
 }
 
@@ -71,6 +75,7 @@ func Disassemble(src *types.KafkaOnChainEvent) (interface{}, error) {
 		return nil, fmt.Errorf("get event from topic error")
 	}
 
+	log.Debugf(src.Data)
 	if err := json.Unmarshal([]byte(src.Data), event); err != nil {
 		return nil, err
 	}
