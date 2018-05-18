@@ -57,7 +57,7 @@ func RegistryEmitter(zkOpt zklock.ZkLockConfig, producerOpt, consumerOpt kafka.K
 		return fmt.Errorf("kafka consumer brokers should not be empty")
 	}
 	register = &kafka.ConsumerRegister{}
-	register.Initialize(consumerOpt.Brokers[0])
+	register.Initialize(consumerOpt.Brokers)
 	if err := register.RegisterTopicAndHandler(KAFKA_CONSUMER_TOPIC, KAFKA_CONSUMER_GROUP, types.Transaction{}, service.WatchingPendingTransaction); err != nil {
 		return err
 	}
