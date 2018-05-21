@@ -47,7 +47,7 @@ func newEventData(event *abi.Event, cabi *abi.ABI) EventData {
 	return c
 }
 
-func (e EventData) handleEvent(tx *ethtyp.Transaction, evtLog *ethtyp.Log, gasUsed, blockTime *big.Int, methodName string) error {
+func (e *EventData) handleEvent(tx *ethtyp.Transaction, evtLog *ethtyp.Log, gasUsed, blockTime *big.Int, methodName string) error {
 	if err := e.beforeUnpack(tx, evtLog, gasUsed, blockTime, methodName); err != nil {
 		return err
 	}
@@ -61,7 +61,7 @@ func (e EventData) handleEvent(tx *ethtyp.Transaction, evtLog *ethtyp.Log, gasUs
 	return nil
 }
 
-func (e EventData) beforeUnpack(tx *ethtyp.Transaction, evtLog *ethtyp.Log, gasUsed, blockTime *big.Int, methodName string) error {
+func (e *EventData) beforeUnpack(tx *ethtyp.Transaction, evtLog *ethtyp.Log, gasUsed, blockTime *big.Int, methodName string) error {
 	e.TxInfo = setTxInfo(tx, gasUsed, blockTime, methodName)
 	e.Protocol = common.HexToAddress(evtLog.Address)
 	e.TxLogIndex = evtLog.LogIndex.Int64()
@@ -70,7 +70,7 @@ func (e EventData) beforeUnpack(tx *ethtyp.Transaction, evtLog *ethtyp.Log, gasU
 	return nil
 }
 
-func (e EventData) unpack(evtLog *ethtyp.Log) (err error) {
+func (e *EventData) unpack(evtLog *ethtyp.Log) (err error) {
 	var decodedValues [][]byte
 	data := hexutil.MustDecode(evtLog.Data)
 	for _, topic := range evtLog.Topics {
@@ -80,7 +80,7 @@ func (e EventData) unpack(evtLog *ethtyp.Log) (err error) {
 	return e.Abi.Unpack(e.Event, e.Name, data, decodedValues)
 }
 
-func (e EventData) afterUnpack() error {
+func (e *EventData) afterUnpack() error {
 	if e.Name == contract.EVENT_RING_MINED {
 		ringmined, fills, err := e.getRingMinedEvents()
 		if err != nil {
@@ -130,7 +130,7 @@ func (e EventData) afterUnpack() error {
 	return Produce(event)
 }
 
-func (e EventData) getRingMinedEvents() (*types.RingMinedEvent, []*types.OrderFilledEvent, error) {
+func (e *EventData) getRingMinedEvents() (*types.RingMinedEvent, []*types.OrderFilledEvent, error) {
 	var (
 		event = &types.RingMinedEvent{}
 		fills []*types.OrderFilledEvent
@@ -149,7 +149,7 @@ func (e EventData) getRingMinedEvents() (*types.RingMinedEvent, []*types.OrderFi
 	return event, fills, nil
 }
 
-func (e EventData) getOrderCancelledEvent() (*types.OrderCancelledEvent, error) {
+func (e *EventData) getOrderCancelledEvent() (*types.OrderCancelledEvent, error) {
 	src := e.Event.(*contract.OrderCancelledEvent)
 
 	event := src.ConvertDown()
@@ -160,7 +160,7 @@ func (e EventData) getOrderCancelledEvent() (*types.OrderCancelledEvent, error) 
 	return event, nil
 }
 
-func (e EventData) getCutoffAllEvent() (*types.CutoffEvent, error) {
+func (e *EventData) getCutoffAllEvent() (*types.CutoffEvent, error) {
 	src := e.Event.(*contract.CutoffEvent)
 
 	event := src.ConvertDown()
@@ -171,7 +171,7 @@ func (e EventData) getCutoffAllEvent() (*types.CutoffEvent, error) {
 	return event, nil
 }
 
-func (e EventData) getCutoffPairEvent() (*types.CutoffPairEvent, error) {
+func (e *EventData) getCutoffPairEvent() (*types.CutoffPairEvent, error) {
 	src := e.Event.(*contract.CutoffPairEvent)
 
 	event := src.ConvertDown()
@@ -182,7 +182,7 @@ func (e EventData) getCutoffPairEvent() (*types.CutoffPairEvent, error) {
 	return event, nil
 }
 
-func (e EventData) getTransferEvent() (*types.TransferEvent, error) {
+func (e *EventData) getTransferEvent() (*types.TransferEvent, error) {
 	src := e.Event.(*contract.TransferEvent)
 
 	event := src.ConvertDown()
@@ -193,7 +193,7 @@ func (e EventData) getTransferEvent() (*types.TransferEvent, error) {
 	return event, nil
 }
 
-func (e EventData) getApprovalEvent() (*types.ApprovalEvent, error) {
+func (e *EventData) getApprovalEvent() (*types.ApprovalEvent, error) {
 	src := e.Event.(*contract.ApprovalEvent)
 
 	event := src.ConvertDown()
@@ -204,7 +204,7 @@ func (e EventData) getApprovalEvent() (*types.ApprovalEvent, error) {
 	return event, nil
 }
 
-func (e EventData) getDepositEvent() (*types.WethDepositEvent, error) {
+func (e *EventData) getDepositEvent() (*types.WethDepositEvent, error) {
 	src := e.Event.(*contract.WethDepositEvent)
 
 	event := src.ConvertDown()
@@ -215,7 +215,7 @@ func (e EventData) getDepositEvent() (*types.WethDepositEvent, error) {
 	return event, nil
 }
 
-func (e EventData) getWithdrawalEvent() (*types.WethWithdrawalEvent, error) {
+func (e *EventData) getWithdrawalEvent() (*types.WethWithdrawalEvent, error) {
 	src := e.Event.(*contract.WethWithdrawalEvent)
 
 	event := src.ConvertDown()
@@ -226,7 +226,7 @@ func (e EventData) getWithdrawalEvent() (*types.WethWithdrawalEvent, error) {
 	return event, nil
 }
 
-func (e EventData) getTokenRegisteredEvent() (*types.TokenRegisterEvent, error) {
+func (e *EventData) getTokenRegisteredEvent() (*types.TokenRegisterEvent, error) {
 	src := e.Event.(*contract.TokenRegisteredEvent)
 
 	event := src.ConvertDown()
@@ -237,7 +237,7 @@ func (e EventData) getTokenRegisteredEvent() (*types.TokenRegisterEvent, error) 
 	return event, nil
 }
 
-func (e EventData) getTokenUnRegisteredEvent() (*types.TokenUnRegisterEvent, error) {
+func (e *EventData) getTokenUnRegisteredEvent() (*types.TokenUnRegisterEvent, error) {
 	src := e.Event.(*contract.TokenUnRegisteredEvent)
 
 	event := src.ConvertDown()
@@ -248,7 +248,7 @@ func (e EventData) getTokenUnRegisteredEvent() (*types.TokenUnRegisterEvent, err
 	return event, nil
 }
 
-func (e EventData) getAddressAuthorizedEvent() (*types.AddressAuthorizedEvent, error) {
+func (e *EventData) getAddressAuthorizedEvent() (*types.AddressAuthorizedEvent, error) {
 	src := e.Event.(*contract.AddressAuthorizedEvent)
 
 	event := src.ConvertDown()
@@ -259,7 +259,7 @@ func (e EventData) getAddressAuthorizedEvent() (*types.AddressAuthorizedEvent, e
 	return event, nil
 }
 
-func (e EventData) getAddressDeAuthorizedEvent() (*types.AddressDeAuthorizedEvent, error) {
+func (e *EventData) getAddressDeAuthorizedEvent() (*types.AddressDeAuthorizedEvent, error) {
 	src := e.Event.(*contract.AddressDeAuthorizedEvent)
 
 	event := src.ConvertDown()
