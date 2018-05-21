@@ -81,7 +81,7 @@ func GlobalFlags() []cli.Flag {
 func startNode(ctx *cli.Context) error {
 	globalConfig := SetGlobalConfig(ctx)
 
-	logger := log.Initialize(globalConfig.Log.ZapOpts)
+	logger := log.Initialize(globalConfig.Log)
 	defer func() {
 		if nil != logger {
 			logger.Sync()

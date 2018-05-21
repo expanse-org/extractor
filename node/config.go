@@ -57,7 +57,7 @@ func LoadConfig(file string) *GlobalConfig {
 type GlobalConfig struct {
 	Title            string `required:"true"`
 	Owner            string
-	Log              LogOptions
+	Log              zap.Config
 	Mysql            libdao.MysqlOptions
 	Redis            redis.RedisOptions
 	ZkLock           zklock.ZkLockConfig
@@ -66,10 +66,6 @@ type GlobalConfig struct {
 	Extractor        extractor.ExtractorOptions
 	Accessor         accessor.AccessorOptions
 	LoopringProtocol lpraccssor.LoopringProtocolOptions
-}
-
-type LogOptions struct {
-	ZapOpts zap.Config
 }
 
 func Validator(cv reflect.Value) (bool, error) {
