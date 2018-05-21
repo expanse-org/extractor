@@ -81,7 +81,7 @@ func (m *MethodData) beforeUnpack(tx *ethtyp.Transaction, gasUsed, blockTime *bi
 
 func (m *MethodData) unpack(tx *ethtyp.Transaction) error {
 	data := hexutil.MustDecode("0x" + tx.Input[10:])
-	return m.Abi.Unpack(m.Method, m.Name, data, [][]byte{})
+	return m.Abi.UnpackMethod(m.Method, m.Name, data, [][]byte{})
 }
 
 // afterUnpack set special fields in internal event

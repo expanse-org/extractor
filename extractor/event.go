@@ -77,7 +77,7 @@ func (e *EventData) unpack(evtLog *ethtyp.Log) (err error) {
 		decodeBytes := hexutil.MustDecode(topic)
 		decodedValues = append(decodedValues, decodeBytes)
 	}
-	return e.Abi.Unpack(e.Event, e.Name, data, decodedValues)
+	return e.Abi.UnpackEvent(e.Event, e.Name, data, decodedValues)
 }
 
 func (e *EventData) afterUnpack() error {
