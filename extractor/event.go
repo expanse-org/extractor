@@ -144,6 +144,9 @@ func (e *EventData) getRingMinedEvents() (*types.RingMinedEvent, []*types.OrderF
 	}
 
 	event.TxInfo = e.TxInfo
+	for _, v := range fills {
+		v.TxInfo = e.TxInfo
+	}
 
 	log.Debugf("extractor,tx:%s ringMined event logIndex:%d, ringhash:%s, ringIndex:%s", event.TxHash.Hex(), event.TxLogIndex, event.Ringhash.Hex(), event.RingIndex.String())
 	return event, fills, nil
