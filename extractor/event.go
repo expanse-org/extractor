@@ -87,10 +87,10 @@ func (e *EventData) afterUnpack() error {
 			return err
 		}
 		Produce(ringmined)
-
 		for _, fill := range fills {
 			Produce(fill)
 		}
+		return nil
 	}
 
 	var (
@@ -131,15 +131,10 @@ func (e *EventData) afterUnpack() error {
 }
 
 func (e *EventData) getRingMinedEvents() (*types.RingMinedEvent, []*types.OrderFilledEvent, error) {
-	var (
-		event = &types.RingMinedEvent{}
-		fills []*types.OrderFilledEvent
-		err   error
-	)
-
 	src := e.Event.(*contract.RingMinedEvent)
 
-	if event, fills, err = src.ConvertDown(); err != nil {
+	event, fills, err := src.ConvertDown()
+	if err != nil {
 		return nil, fills, err
 	}
 

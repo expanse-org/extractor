@@ -74,9 +74,8 @@ func UnRegistryEmitter() {
 func Produce(src interface{}) error {
 	event, err := ex.Assemble(src)
 	if err != nil {
-		return fmt.Errorf("emit topic is empty")
+		return err
 	}
-
 	producer.SendMessage(KAFKA_PRODUCER_TOPIC, event, KAFKA_PRODUCER_KEY)
 	return nil
 }

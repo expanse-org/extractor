@@ -288,7 +288,7 @@ func (l *ExtractorServiceImpl) ProcessEvent(tx *ethtyp.Transaction, receipt *eth
 		}
 
 		if err := event.handleEvent(tx, &evtLog, gasUsed, blockTime, methodName); err != nil {
-			log.Errorf("extractor, process event, tx:%s error:%s", tx.Hash, err.Error())
+			log.Errorf("extractor, process event, tx:%s, logIndex:%s error:%s", tx.Hash, evtLog.LogIndex.BigInt().String(), err.Error())
 		}
 	}
 

@@ -43,7 +43,7 @@ owner = "Loopring corporation"
     fetch_tx_retry_count = 120
 
 [extractor]
-    start_block_number = 42861
+    start_block_number = 42879
     end_block_number = 0
     confirm_block_number = 0
     debug = false
