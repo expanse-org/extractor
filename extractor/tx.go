@@ -20,6 +20,7 @@ package extractor
 
 import (
 	"github.com/Loopring/relay-lib/eth/contract"
+	"github.com/Loopring/relay-lib/eth/loopringaccessor"
 	ethtyp "github.com/Loopring/relay-lib/eth/types"
 	"github.com/Loopring/relay-lib/log"
 	"github.com/Loopring/relay-lib/types"
@@ -30,26 +31,27 @@ import (
 func setTxInfo(tx *ethtyp.Transaction, gasUsed, blockTime *big.Int, methodName string) types.TxInfo {
 	var txinfo types.TxInfo
 
+	txinfo.Protocol = common.HexToAddress(tx.To)
+	txinfo.From = common.HexToAddress(tx.From)
+	txinfo.To = common.HexToAddress(tx.To)
+
+	if impl, ok := loopringaccessor.ProtocolAddresses()[txinfo.To]; ok {
+		txinfo.DelegateAddress = impl.DelegateAddress
+	} else {
+		txinfo.DelegateAddress = types.NilAddress
+	}
+
 	txinfo.BlockNumber = tx.BlockNumber.BigInt()
 	txinfo.BlockTime = blockTime.Int64()
 	txinfo.BlockHash = common.HexToHash(tx.BlockHash)
 	txinfo.TxHash = common.HexToHash(tx.Hash)
 	txinfo.TxIndex = tx.TransactionIndex.Int64()
-	txinfo.Protocol = common.HexToAddress(tx.To)
-	txinfo.From = common.HexToAddress(tx.From)
-	txinfo.To = common.HexToAddress(tx.To)
+	txinfo.Value = tx.Value.BigInt()
+
 	txinfo.GasLimit = tx.Gas.BigInt()
 	txinfo.GasUsed = gasUsed
 	txinfo.GasPrice = tx.GasPrice.BigInt()
 	txinfo.Nonce = tx.Nonce.BigInt()
-	txinfo.Value = tx.Value.BigInt()
-
-	// todo delegate address
-	//if impl, ok := ethaccessor.ProtocolAddresses()[txinfo.To]; ok {
-	//	txinfo.DelegateAddress = impl.DelegateAddress
-	//} else {
-	//	txinfo.DelegateAddress = types.NilAddress
-	//}
 
 	txinfo.Identify = methodName
 
