@@ -250,6 +250,28 @@ func TestExtractorServiceImpl_UnpackRingMinedEvent(t *testing.T) {
 	t.Logf("tradeAmount:%d", evt.TradeAmount)
 }
 
+func TestExtractorServiceImpl_UnpackOrderCancelledEvent(t *testing.T) {
+	input := "0x0000000000000000000000000000000000000000000000001bc16d674ec80000"
+	topics := []string{"0x3e1003227205ab9eb9b1652e25b2f6fc548ff55e94bf76a42aca90501c6c4e35", "0xc0d710b036a622871974e8cc28dd5abe4065dfeebfc3a2724f1294c554d70e9c"}
+	src := &contract.OrderCancelledEvent{}
+
+	data := hexutil.MustDecode(input)
+	var decodedValues [][]byte
+
+	for _, v := range topics {
+		decodedValues = append(decodedValues, hexutil.MustDecode(v))
+	}
+
+	if err := implAbi.UnpackEvent(src, contract.EVENT_ORDER_CANCELLED, data, decodedValues); err != nil {
+		t.Fatalf(err.Error())
+	}
+
+	event := src.ConvertDown()
+
+	t.Logf("orderhash:%s", event.OrderHash.Hex())
+	t.Logf("amount:%s", event.AmountCancelled.String())
+}
+
 func TestExtractorServiceImpl_UnpackDepositEvent(t *testing.T) {
 	input := "0x0000000000000000000000000000000000000000000000000de0b6b3a7640000"
 	deposit := &contract.WethDepositEvent{}
