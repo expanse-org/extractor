@@ -7,8 +7,8 @@ owner = "Loopring corporation"
     development = true
     disable_stacktrace = false
     encoding = "console"
-    output_paths = ["/Users/fukun/projects/gohome/src/github.com/Loopring/extractor/zap.log", "stderr"]
-    error_output_paths = ["/Users/fukun/projects/gohome/src/github.com/Loopring/extractor/err.log"]
+    output_paths = ["zap.log", "stderr"]
+    error_output_paths = ["err.log"]
         [log.encoder_config]
         message_key = "msg"
         level_key = "level"
@@ -42,7 +42,7 @@ owner = "Loopring corporation"
     fetch_tx_retry_count = 120
 
 [extractor]
-    start_block_number = 42730
+    start_block_number = 42879
     end_block_number = 0
     confirm_block_number = 0
     debug = false
@@ -55,7 +55,7 @@ owner = "Loopring corporation"
          "v1.5.1" = "0x781870080c8c24a2fd6882296c49c837b06a65e6"
 
 [market]
-    token_file = "/Users/fukun/projects/gohome/src/github.com/Loopring/extractor/config/debug_tokens.json"
+    token_file = "tokens.json"
 
 [zk_lock]
     zk_servers = "127.0.0.1:2181"
@@ -63,6 +63,5 @@ owner = "Loopring corporation"
 
 [kafka_producer]
     brokers = ["127.0.0.1:9092"]
-
 [kafka_consumer]
     brokers = ["127.0.0.1:9092"]
