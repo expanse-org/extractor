@@ -29,6 +29,7 @@ import (
 	"github.com/Loopring/relay-lib/eth/accessor"
 	lpraccssor "github.com/Loopring/relay-lib/eth/loopringaccessor"
 	"github.com/Loopring/relay-lib/kafka"
+	util "github.com/Loopring/relay-lib/marketutil"
 	"github.com/Loopring/relay-lib/zklock"
 	"github.com/naoina/toml"
 	"go.uber.org/zap"
@@ -66,6 +67,7 @@ type GlobalConfig struct {
 	Extractor        extractor.ExtractorOptions
 	Accessor         accessor.AccessorOptions
 	LoopringProtocol lpraccssor.LoopringProtocolOptions
+	Market           util.MarketOptions
 }
 
 func Validator(cv reflect.Value) (bool, error) {

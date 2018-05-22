@@ -25,6 +25,7 @@ import (
 	"github.com/Loopring/relay-lib/eth/accessor"
 	"github.com/Loopring/relay-lib/eth/loopringaccessor"
 	"github.com/Loopring/relay-lib/log"
+	util "github.com/Loopring/relay-lib/marketutil"
 	"go.uber.org/zap"
 	"sync"
 )
@@ -45,6 +46,7 @@ func NewNode(logger *zap.Logger, globalConfig *GlobalConfig) *Node {
 
 	n.registerCache()
 	n.registerMysql()
+	n.registerMarketUtil()
 	n.registerAccessor()
 	n.registerExtractor()
 	n.registerEmitter()
@@ -72,6 +74,10 @@ func (n *Node) registerCache() {
 
 func (n *Node) registerMysql() {
 	n.rdsService = dao.NewDb(&n.globalConfig.Mysql)
+}
+
+func (n *Node) registerMarketUtil() {
+	util.Initialize(&n.globalConfig.Market)
 }
 
 func (n *Node) registerAccessor() {

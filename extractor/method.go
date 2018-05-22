@@ -53,8 +53,10 @@ func (m *MethodData) handleMethod(tx *ethtyp.Transaction, gasUsed, blockTime *bi
 	if err := m.beforeUnpack(tx, gasUsed, blockTime, status, methodName); err != nil {
 		return err
 	}
-	if err := m.unpack(tx); err != nil {
-		return err
+	if m.Name != contract.METHOD_WETH_DEPOSIT {
+		if err := m.unpack(tx); err != nil {
+			return err
+		}
 	}
 	if err := m.afterUnpack(); err != nil {
 		return err
@@ -217,7 +219,10 @@ func (m *MethodData) getApproveEvent() (*types.ApprovalEvent, error) {
 }
 
 func (m *MethodData) getTransferEvent() (*types.TransferEvent, error) {
-	src := m.Method.(*contract.TransferMethod)
+	src, ok := m.Method.(*contract.TransferMethod)
+	if !ok {
+		return nil, fmt.Errorf("transfer method inputs type error")
+	}
 
 	event := src.ConvertDown()
 	event.Sender = m.From

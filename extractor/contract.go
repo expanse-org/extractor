@@ -133,7 +133,6 @@ func (processor *AbiProcessor) SupportedMethod(tx *ethtyp.Transaction) bool {
 	if _, ok := processor.protocols[protocol]; !ok {
 		return false
 	}
-
 	id := tx.MethodId()
 	if id == "" {
 		return false
@@ -261,7 +260,7 @@ func (processor *AbiProcessor) loadWethContract() {
 
 		switch methodData.Name {
 		case contract.METHOD_WETH_DEPOSIT:
-			// weth deposit without any inputs,use transaction.value as input
+			methodData.Method = &contract.WethDepositMethod{}
 		case contract.METHOD_WETH_WITHDRAWAL:
 			methodData.Method = &contract.WethWithdrawalMethod{}
 		}

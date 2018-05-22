@@ -102,11 +102,26 @@ func TestExtractorServiceImpl_UnpackWethWithdrawalMethod(t *testing.T) {
 
 	data := hexutil.MustDecode("0x" + input[10:])
 
-	if err := wethAbi.UnpackMethod(&withdrawal, "withdraw", data, [][]byte{}); err != nil {
+	if err := wethAbi.UnpackMethod(&withdrawal, contract.METHOD_WETH_WITHDRAWAL, data, [][]byte{}); err != nil {
 		t.Fatalf(err.Error())
 	}
 
 	evt := withdrawal.ConvertDown()
+	t.Logf("withdrawal event value:%s", evt.Amount)
+}
+
+func TestExtractorServiceImpl_UnpackWethDepositMethod(t *testing.T) {
+	input := "0xd0e30db0"
+
+	var deposit contract.WethDepositMethod
+
+	data := hexutil.MustDecode("0x" + input[10:])
+
+	if err := wethAbi.UnpackMethod(&deposit, contract.METHOD_WETH_DEPOSIT, data, [][]byte{}); err != nil {
+		t.Fatalf(err.Error())
+	}
+
+	evt := deposit.ConvertDown()
 	t.Logf("withdrawal event value:%s", evt.Amount)
 }
 
