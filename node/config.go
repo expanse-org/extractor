@@ -68,6 +68,7 @@ type GlobalConfig struct {
 	Accessor         accessor.AccessorOptions
 	LoopringProtocol lpraccssor.LoopringProtocolOptions
 	Market           util.MarketOptions
+	WatchCloudOpen   bool // default false
 }
 
 func Validator(cv reflect.Value) (bool, error) {

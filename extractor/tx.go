@@ -22,7 +22,7 @@ import (
 	"github.com/Loopring/relay-lib/eth/contract"
 	"github.com/Loopring/relay-lib/eth/loopringaccessor"
 	ethtyp "github.com/Loopring/relay-lib/eth/types"
-	"github.com/Loopring/relay-lib/log"
+	//"github.com/Loopring/relay-lib/log"
 	"github.com/Loopring/relay-lib/types"
 	"github.com/ethereum/go-ethereum/common"
 	"math/big"
@@ -71,7 +71,7 @@ func handleOtherTransaction(tx *ethtyp.Transaction, receipt *ethtyp.TransactionR
 		event.Sender = common.HexToAddress(tx.From)
 		event.Receiver = common.HexToAddress(tx.To)
 
-		log.Debugf("extractor,tx:%s handleEthTransfer sender:%s, receiver:%s, value:%s, gasUsed:%s, status:%d", event.TxHash.Hex(), event.Sender.Hex(), event.Receiver.Hex(), event.Amount.String(), event.GasUsed.String(), event.Status)
+		//log.Debugf("extractor,tx:%s handleEthTransfer sender:%s, receiver:%s, value:%s, gasUsed:%s, status:%d", event.TxHash.Hex(), event.Sender.Hex(), event.Receiver.Hex(), event.Amount.String(), event.GasUsed.String(), event.Status)
 
 		return Produce(event)
 	} else {
@@ -80,7 +80,7 @@ func handleOtherTransaction(tx *ethtyp.Transaction, receipt *ethtyp.TransactionR
 		event.TxLogIndex = 0
 		event.Status = getStatus(tx, receipt)
 
-		log.Debugf("extractor,tx:%s handleUnSupportedContract from:%s, to:%s, gasUsed:%s, status:%d", event.TxHash.Hex(), event.From.Hex(), event.To.Hex(), event.GasUsed.String(), event.Status)
+		//log.Debugf("extractor,tx:%s handleUnSupportedContract from:%s, to:%s, gasUsed:%s, status:%d", event.TxHash.Hex(), event.From.Hex(), event.To.Hex(), event.GasUsed.String(), event.Status)
 
 		return Produce(event)
 	}

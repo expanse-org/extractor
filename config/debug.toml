@@ -2,6 +2,8 @@ title = "extractor"
 
 owner = "Loopring corporation"
 
+watch_cloud_open = false
+
 [log]
     level = "debug"
     development = true
