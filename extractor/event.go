@@ -22,7 +22,7 @@ import (
 	"github.com/Loopring/relay-lib/eth/abi"
 	"github.com/Loopring/relay-lib/eth/contract"
 	ethtyp "github.com/Loopring/relay-lib/eth/types"
-	"github.com/Loopring/relay-lib/log"
+	//"github.com/Loopring/relay-lib/log"
 	"github.com/Loopring/relay-lib/types"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -143,7 +143,7 @@ func (e *EventData) getRingMinedEvents() (*types.RingMinedEvent, []*types.OrderF
 		v.TxInfo = e.TxInfo
 	}
 
-	log.Debugf("extractor,tx:%s ringMined event logIndex:%d, ringhash:%s, ringIndex:%s", event.TxHash.Hex(), event.TxLogIndex, event.Ringhash.Hex(), event.RingIndex.String())
+	//log.Debugf("extractor,tx:%s ringMined event logIndex:%d, ringhash:%s, ringIndex:%s", event.TxHash.Hex(), event.TxLogIndex, event.Ringhash.Hex(), event.RingIndex.String())
 	return event, fills, nil
 }
 
@@ -153,7 +153,7 @@ func (e *EventData) getOrderCancelledEvent() (*types.OrderCancelledEvent, error)
 	event := src.ConvertDown()
 	event.TxInfo = e.TxInfo
 
-	log.Debugf("extractor,tx:%s orderCancelled event orderhash:%s, cancelAmount:%s", event.TxHash.Hex(), event.OrderHash.Hex(), event.AmountCancelled.String())
+	//log.Debugf("extractor,tx:%s orderCancelled event orderhash:%s, cancelAmount:%s", event.TxHash.Hex(), event.OrderHash.Hex(), event.AmountCancelled.String())
 
 	return event, nil
 }
@@ -164,7 +164,7 @@ func (e *EventData) getCutoffAllEvent() (*types.CutoffEvent, error) {
 	event := src.ConvertDown()
 	event.TxInfo = e.TxInfo
 
-	log.Debugf("extractor,tx:%s cutoffTimestampChanged event ownerAddress:%s, cutOffTime:%s, status:%d", event.TxHash.Hex(), event.Owner.Hex(), event.Cutoff.String(), event.Status)
+	//log.Debugf("extractor,tx:%s cutoffTimestampChanged event ownerAddress:%s, cutOffTime:%s, status:%d", event.TxHash.Hex(), event.Owner.Hex(), event.Cutoff.String(), event.Status)
 
 	return event, nil
 }
@@ -175,7 +175,7 @@ func (e *EventData) getCutoffPairEvent() (*types.CutoffPairEvent, error) {
 	event := src.ConvertDown()
 	event.TxInfo = e.TxInfo
 
-	log.Debugf("extractor,tx:%s cutoffPair event ownerAddress:%s, token1:%s, token2:%s, cutOffTime:%s", event.TxHash.Hex(), event.Owner.Hex(), event.Token1.Hex(), event.Token2.Hex(), event.Cutoff.String())
+	//log.Debugf("extractor,tx:%s cutoffPair event ownerAddress:%s, token1:%s, token2:%s, cutOffTime:%s", event.TxHash.Hex(), event.Owner.Hex(), event.Token1.Hex(), event.Token2.Hex(), event.Cutoff.String())
 
 	return event, nil
 }
@@ -186,7 +186,7 @@ func (e *EventData) getTransferEvent() (*types.TransferEvent, error) {
 	event := src.ConvertDown()
 	event.TxInfo = e.TxInfo
 
-	log.Debugf("extractor,tx:%s tokenTransfer event, methodName:%s, logIndex:%d, from:%s, to:%s, value:%s", event.TxHash.Hex(), event.Identify, event.TxLogIndex, event.Sender.Hex(), event.Receiver.Hex(), event.Amount.String())
+	//log.Debugf("extractor,tx:%s tokenTransfer event, methodName:%s, logIndex:%d, from:%s, to:%s, value:%s", event.TxHash.Hex(), event.Identify, event.TxLogIndex, event.Sender.Hex(), event.Receiver.Hex(), event.Amount.String())
 
 	return event, nil
 }
@@ -197,7 +197,7 @@ func (e *EventData) getApprovalEvent() (*types.ApprovalEvent, error) {
 	event := src.ConvertDown()
 	event.TxInfo = e.TxInfo
 
-	log.Debugf("extractor,tx:%s approval event owner:%s, spender:%s, value:%s", event.TxHash.Hex(), event.Owner.Hex(), event.Spender.Hex(), event.Amount.String())
+	//log.Debugf("extractor,tx:%s approval event owner:%s, spender:%s, value:%s", event.TxHash.Hex(), event.Owner.Hex(), event.Spender.Hex(), event.Amount.String())
 
 	return event, nil
 }
@@ -208,7 +208,7 @@ func (e *EventData) getDepositEvent() (*types.WethDepositEvent, error) {
 	event := src.ConvertDown()
 	event.TxInfo = e.TxInfo
 
-	log.Debugf("extractor,tx:%s wethDeposit event deposit to:%s, number:%s", event.TxHash.Hex(), event.Dst.Hex(), event.Amount.String())
+	//log.Debugf("extractor,tx:%s wethDeposit event deposit to:%s, number:%s", event.TxHash.Hex(), event.Dst.Hex(), event.Amount.String())
 
 	return event, nil
 }
@@ -219,7 +219,7 @@ func (e *EventData) getWithdrawalEvent() (*types.WethWithdrawalEvent, error) {
 	event := src.ConvertDown()
 	event.TxInfo = e.TxInfo
 
-	log.Debugf("extractor,tx:%s wethWithdrawal event withdrawal from:%s, number:%s", event.TxHash.Hex(), event.Src.Hex(), event.Amount.String())
+	//log.Debugf("extractor,tx:%s wethWithdrawal event withdrawal from:%s, number:%s", event.TxHash.Hex(), event.Src.Hex(), event.Amount.String())
 
 	return event, nil
 }
@@ -230,7 +230,7 @@ func (e *EventData) getTokenRegisteredEvent() (*types.TokenRegisterEvent, error)
 	event := src.ConvertDown()
 	event.TxInfo = e.TxInfo
 
-	log.Debugf("extractor,tx:%s tokenRegistered event address:%s, symbol:%s", event.TxHash.Hex(), event.Token.Hex(), event.Symbol)
+	//log.Debugf("extractor,tx:%s tokenRegistered event address:%s, symbol:%s", event.TxHash.Hex(), event.Token.Hex(), event.Symbol)
 
 	return event, nil
 }
@@ -241,7 +241,7 @@ func (e *EventData) getTokenUnRegisteredEvent() (*types.TokenUnRegisterEvent, er
 	event := src.ConvertDown()
 	event.TxInfo = e.TxInfo
 
-	log.Debugf("extractor,tx:%s tokenUnregistered event address:%s, symbol:%s", event.TxHash.Hex(), event.Token.Hex(), event.Symbol)
+	//log.Debugf("extractor,tx:%s tokenUnregistered event address:%s, symbol:%s", event.TxHash.Hex(), event.Token.Hex(), event.Symbol)
 
 	return event, nil
 }
@@ -252,7 +252,7 @@ func (e *EventData) getAddressAuthorizedEvent() (*types.AddressAuthorizedEvent, 
 	event := src.ConvertDown()
 	event.TxInfo = e.TxInfo
 
-	log.Debugf("extractor,tx:%s addressAuthorized event address:%s, number:%d", event.TxHash.Hex(), event.Protocol.Hex(), event.Number)
+	//log.Debugf("extractor,tx:%s addressAuthorized event address:%s, number:%d", event.TxHash.Hex(), event.Protocol.Hex(), event.Number)
 
 	return event, nil
 }
@@ -263,7 +263,7 @@ func (e *EventData) getAddressDeAuthorizedEvent() (*types.AddressDeAuthorizedEve
 	event := src.ConvertDown()
 	event.TxInfo = e.TxInfo
 
-	log.Debugf("extractor,tx:%s addressDeAuthorized event address:%s, number:%d", event.TxHash.Hex(), event.Protocol.Hex(), event.Number)
+	//log.Debugf("extractor,tx:%s addressDeAuthorized event address:%s, number:%d", event.TxHash.Hex(), event.Protocol.Hex(), event.Number)
 
 	return event, nil
 }

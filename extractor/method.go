@@ -23,7 +23,7 @@ import (
 	"github.com/Loopring/relay-lib/eth/abi"
 	"github.com/Loopring/relay-lib/eth/contract"
 	ethtyp "github.com/Loopring/relay-lib/eth/types"
-	"github.com/Loopring/relay-lib/log"
+	//"github.com/Loopring/relay-lib/log"
 	"github.com/Loopring/relay-lib/types"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -154,7 +154,7 @@ func (m *MethodData) getSubmitRingEvent() (*types.SubmitRingMethodEvent, error) 
 	//	eventemitter.Produce(eventemitter.GatewayNewOrder, v)
 	//}
 
-	log.Debugf("extractor,tx:%s submitRing method gas:%s, gasprice:%s, status:%s", event.TxHash.Hex(), event.GasUsed.String(), event.GasPrice.String(), types.StatusStr(event.Status))
+	//log.Debugf("extractor,tx:%s submitRing method gas:%s, gasprice:%s, status:%s", event.TxHash.Hex(), event.GasUsed.String(), event.GasPrice.String(), types.StatusStr(event.Status))
 
 	return event, nil
 }
@@ -175,7 +175,7 @@ func (m *MethodData) getOrderCancelledEvent() (*types.OrderCancelledEvent, error
 	event.OrderHash = order.Hash
 	event.AmountCancelled = cancelAmount
 
-	log.Debugf("extractor,tx:%s cancelOrder method order tokenS:%s,tokenB:%s,amountS:%s,amountB:%s", event.TxHash.Hex(), order.TokenS.Hex(), order.TokenB.Hex(), order.AmountS.String(), order.AmountB.String())
+	//log.Debugf("extractor,tx:%s cancelOrder method order tokenS:%s,tokenB:%s,amountS:%s,amountB:%s", event.TxHash.Hex(), order.TokenS.Hex(), order.TokenB.Hex(), order.AmountS.String(), order.AmountB.String())
 
 	return event, nil
 }
@@ -189,7 +189,7 @@ func (m *MethodData) getCutoffAllEvent() (*types.CutoffEvent, error) {
 	event := src.ConvertDown()
 	event.TxInfo = m.TxInfo
 	event.Owner = event.From
-	log.Debugf("extractor,tx:%s cutoff method owner:%s, cutoff:%d, status:%d", event.TxHash.Hex(), event.Owner.Hex(), event.Cutoff.Int64(), event.Status)
+	//log.Debugf("extractor,tx:%s cutoff method owner:%s, cutoff:%d, status:%d", event.TxHash.Hex(), event.Owner.Hex(), event.Cutoff.Int64(), event.Status)
 
 	return event, nil
 }
@@ -204,7 +204,7 @@ func (m *MethodData) getCutoffPairEvent() (*types.CutoffPairEvent, error) {
 	event.TxInfo = m.TxInfo
 	event.Owner = event.From
 
-	log.Debugf("extractor,tx:%s cutoffpair method owenr:%s, token1:%s, token2:%s, cutoff:%d", event.TxHash.Hex(), event.Owner.Hex(), event.Token1.Hex(), event.Token2.Hex(), event.Cutoff.Int64())
+	//log.Debugf("extractor,tx:%s cutoffpair method owenr:%s, token1:%s, token2:%s, cutoff:%d", event.TxHash.Hex(), event.Owner.Hex(), event.Token1.Hex(), event.Token2.Hex(), event.Cutoff.Int64())
 
 	return event, nil
 }
@@ -219,7 +219,7 @@ func (m *MethodData) getApproveEvent() (*types.ApprovalEvent, error) {
 	event.TxInfo = m.TxInfo
 	event.Owner = m.From
 
-	log.Debugf("extractor,tx:%s approve method owner:%s, spender:%s, value:%s", event.TxHash.Hex(), event.Owner.Hex(), event.Spender.Hex(), event.Amount.String())
+	//log.Debugf("extractor,tx:%s approve method owner:%s, spender:%s, value:%s", event.TxHash.Hex(), event.Owner.Hex(), event.Spender.Hex(), event.Amount.String())
 
 	return event, nil
 }
@@ -234,7 +234,7 @@ func (m *MethodData) getTransferEvent() (*types.TransferEvent, error) {
 	event.Sender = m.From
 	event.TxInfo = m.TxInfo
 
-	log.Debugf("extractor,tx:%s transfer method sender:%s, receiver:%s, value:%s", event.TxHash.Hex(), event.Sender.Hex(), event.Receiver.Hex(), event.Amount.String())
+	//log.Debugf("extractor,tx:%s transfer method sender:%s, receiver:%s, value:%s", event.TxHash.Hex(), event.Sender.Hex(), event.Receiver.Hex(), event.Amount.String())
 
 	return event, nil
 }
@@ -245,7 +245,7 @@ func (m *MethodData) getDepositEvent() (*types.WethDepositEvent, error) {
 	event.Amount = m.Value
 	event.TxInfo = m.TxInfo
 
-	log.Debugf("extractor,tx:%s wethDeposit method to:%s, value:%s", event.TxHash.Hex(), event.Dst.Hex(), event.Amount.String())
+	//log.Debugf("extractor,tx:%s wethDeposit method to:%s, value:%s", event.TxHash.Hex(), event.Dst.Hex(), event.Amount.String())
 
 	return event, nil
 }
@@ -260,7 +260,7 @@ func (m *MethodData) getWithdrawalEvent() (*types.WethWithdrawalEvent, error) {
 	event.Src = m.From
 	event.TxInfo = m.TxInfo
 
-	log.Debugf("extractor,tx:%s wethWithdrawal method from:%s, value:%s", event.TxHash.Hex(), event.Src.Hex(), event.Amount.String())
+	//log.Debugf("extractor,tx:%s wethWithdrawal method from:%s, value:%s", event.TxHash.Hex(), event.Src.Hex(), event.Amount.String())
 
 	return event, nil
 }
