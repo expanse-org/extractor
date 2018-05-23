@@ -58,9 +58,8 @@ func TestExtractorServiceImpl_UnpackSubmitRingMethod(t *testing.T) {
 	ring.Protocol = protocol
 
 	data := hexutil.MustDecode("0x" + input[10:])
-	value := [][]byte{}
 
-	if err := implAbi.UnpackMethod(&ring, "submitRing", data, value); err != nil {
+	if err := implAbi.UnpackMethod(&ring, "submitRing", data); err != nil {
 		t.Fatalf(err.Error())
 	}
 
@@ -102,26 +101,11 @@ func TestExtractorServiceImpl_UnpackWethWithdrawalMethod(t *testing.T) {
 
 	data := hexutil.MustDecode("0x" + input[10:])
 
-	if err := wethAbi.UnpackMethod(&withdrawal, contract.METHOD_WETH_WITHDRAWAL, data, [][]byte{}); err != nil {
+	if err := wethAbi.UnpackMethod(&withdrawal, contract.METHOD_WETH_WITHDRAWAL, data); err != nil {
 		t.Fatalf(err.Error())
 	}
 
 	evt := withdrawal.ConvertDown()
-	t.Logf("withdrawal event value:%s", evt.Amount)
-}
-
-func TestExtractorServiceImpl_UnpackWethDepositMethod(t *testing.T) {
-	input := "0xd0e30db0"
-
-	var deposit contract.WethDepositMethod
-
-	data := hexutil.MustDecode("0x" + input[10:])
-
-	if err := wethAbi.UnpackMethod(&deposit, contract.METHOD_WETH_DEPOSIT, data, [][]byte{}); err != nil {
-		t.Fatalf(err.Error())
-	}
-
-	evt := deposit.ConvertDown()
 	t.Logf("withdrawal event value:%s", evt.Amount)
 }
 
@@ -136,7 +120,7 @@ func TestExtractorServiceImpl_UnpackCancelOrderMethod(t *testing.T) {
 	//	t.Logf("index:%d -> %s", i, common.ToHex(data[i*32:(i+1)*32]))
 	//}
 
-	if err := implAbi.UnpackMethod(&method, "cancelOrder", data, [][]byte{}); err != nil {
+	if err := implAbi.UnpackMethod(&method, "cancelOrder", data); err != nil {
 		t.Fatalf(err.Error())
 	}
 
@@ -178,7 +162,7 @@ func TestExtractorServiceImpl_UnpackApproveMethod(t *testing.T) {
 		t.Logf("index:%d -> %s", i, common.ToHex(data[i*32:(i+1)*32]))
 	}
 
-	if err := erc20Abi.UnpackMethod(&method, "approve", data, [][]byte{}); err != nil {
+	if err := erc20Abi.UnpackMethod(&method, "approve", data); err != nil {
 		t.Fatalf(err.Error())
 	}
 
@@ -191,7 +175,7 @@ func TestExtractorServiceImpl_UnpackTransferMethod(t *testing.T) {
 	data := hexutil.MustDecode("0x" + input[10:])
 
 	var method contract.TransferMethod
-	if err := erc20Abi.UnpackMethod(&method, "transfer", data, [][]byte{}); err != nil {
+	if err := erc20Abi.UnpackMethod(&method, "transfer", data); err != nil {
 		t.Fatalf(err.Error())
 	}
 	transfer := method.ConvertDown()
@@ -267,12 +251,15 @@ func TestExtractorServiceImpl_UnpackRingMinedEvent(t *testing.T) {
 
 func TestExtractorServiceImpl_UnpackOrderCancelledEvent(t *testing.T) {
 	input := "0x0000000000000000000000000000000000000000000000001bc16d674ec80000"
-	topics := []string{"0x3e1003227205ab9eb9b1652e25b2f6fc548ff55e94bf76a42aca90501c6c4e35", "0xc0d710b036a622871974e8cc28dd5abe4065dfeebfc3a2724f1294c554d70e9c"}
+
 	src := &contract.OrderCancelledEvent{}
-
 	data := hexutil.MustDecode(input)
-	var decodedValues [][]byte
 
+	var decodedValues [][]byte
+	topics := []string{
+		"0x3e1003227205ab9eb9b1652e25b2f6fc548ff55e94bf76a42aca90501c6c4e35",
+		"0xc0d710b036a622871974e8cc28dd5abe4065dfeebfc3a2724f1294c554d70e9c",
+	}
 	for _, v := range topics {
 		decodedValues = append(decodedValues, hexutil.MustDecode(v))
 	}
@@ -288,12 +275,21 @@ func TestExtractorServiceImpl_UnpackOrderCancelledEvent(t *testing.T) {
 }
 
 func TestExtractorServiceImpl_UnpackDepositEvent(t *testing.T) {
-	input := "0x0000000000000000000000000000000000000000000000000de0b6b3a7640000"
-	deposit := &contract.WethDepositEvent{}
+	input := "0x0000000000000000000000000000000000000000000000001bc16d674ec80000"
 
+	deposit := &contract.WethDepositEvent{}
 	data := hexutil.MustDecode(input)
 
-	if err := wethAbi.UnpackEvent(deposit, "Deposit", data, [][]byte{}); err != nil {
+	decodedValues := [][]byte{}
+	topics := []string{
+		"0xe1fffcc4923d04b559f4d29a8bfc6cda04eb5b0d3c460751c2402c5c5cc9109c",
+		"0x0000000000000000000000001b978a1d302335a6f2ebe4b8823b5e17c3c84135",
+	}
+	for _, v := range topics {
+		decodedValues = append(decodedValues, hexutil.MustDecode(v))
+	}
+
+	if err := wethAbi.UnpackEvent(deposit, "Deposit", data, decodedValues); err != nil {
 		t.Fatalf(err.Error())
 	} else {
 		t.Logf("deposit value:%s", deposit.Value.String())
@@ -301,13 +297,21 @@ func TestExtractorServiceImpl_UnpackDepositEvent(t *testing.T) {
 }
 
 func TestExtractorServiceImpl_UnpackTokenRegistryEvent(t *testing.T) {
-	input := "0x000000000000000000000000f079e0612e869197c5f4c7d0a95df570b163232b0000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000000457455448"
+	input := "0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000034c52430000000000000000000000000000000000000000000000000000000000"
 
 	tokenRegistry := &contract.TokenRegisteredEvent{}
-
 	data := hexutil.MustDecode(input)
 
-	if err := tokenRegistryAbi.UnpackEvent(tokenRegistry, contract.EVENT_TOKEN_REGISTERED, data, [][]byte{}); err != nil {
+	decodedValues := [][]byte{}
+	topics := []string{
+		"0xaaed15520cc86e95b7c2522d968096283afbef7858bdf194b2f60d28a1a8d63e",
+		"0x000000000000000000000000cd36128815ebe0b44d0374649bad2721b8751bef",
+	}
+	for _, v := range topics {
+		decodedValues = append(decodedValues, hexutil.MustDecode(v))
+	}
+
+	if err := tokenRegistryAbi.UnpackEvent(tokenRegistry, contract.EVENT_TOKEN_REGISTERED, data, decodedValues); err != nil {
 		t.Fatalf(err.Error())
 	} else {
 		t.Logf("TokenRegistered symbol:%s, address:%s", tokenRegistry.Symbol, tokenRegistry.Token.Hex())
@@ -315,13 +319,21 @@ func TestExtractorServiceImpl_UnpackTokenRegistryEvent(t *testing.T) {
 }
 
 func TestExtractorServiceImpl_UnpackTokenUnRegistryEvent(t *testing.T) {
-	input := "0x000000000000000000000000529540ee6862158f47d647ae023098f6705210a90000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000000457455448"
+	input := "0x000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000034c5243"
 
 	tokenUnRegistry := &contract.TokenUnRegisteredEvent{}
-
 	data := hexutil.MustDecode(input)
 
-	if err := tokenRegistryAbi.UnpackEvent(tokenUnRegistry, "TokenUnregistered", data, [][]byte{}); err != nil {
+	decodedValues := [][]byte{}
+	topics := []string{
+		"0xee98311a96660ce4ab10cd82053f767653901305ec8acf91ec60311de919e28a",
+		"0x000000000000000000000000cd36128815ebe0b44d0374649bad2721b8751bef",
+	}
+	for _, v := range topics {
+		decodedValues = append(decodedValues, hexutil.MustDecode(v))
+	}
+
+	if err := tokenRegistryAbi.UnpackEvent(tokenUnRegistry, "TokenUnregistered", data, decodedValues); err != nil {
 		t.Fatalf(err.Error())
 	} else {
 		t.Logf("TokenUnregistered symbol:%s, address:%s", tokenUnRegistry.Symbol, tokenUnRegistry.Token.Hex())

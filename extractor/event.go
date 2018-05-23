@@ -208,7 +208,7 @@ func (e *EventData) getDepositEvent() (*types.WethDepositEvent, error) {
 	event := src.ConvertDown()
 	event.TxInfo = e.TxInfo
 
-	log.Debugf("extractor,tx:%s wethDeposit event deposit dst:%s, number:%s", event.TxHash.Hex(), event.Dst.Hex(), event.Amount.String())
+	log.Debugf("extractor,tx:%s wethDeposit event deposit to:%s, number:%s", event.TxHash.Hex(), event.Dst.Hex(), event.Amount.String())
 
 	return event, nil
 }
@@ -219,7 +219,7 @@ func (e *EventData) getWithdrawalEvent() (*types.WethWithdrawalEvent, error) {
 	event := src.ConvertDown()
 	event.TxInfo = e.TxInfo
 
-	log.Debugf("extractor,tx:%s wethWithdrawal event withdrawal to:%s, number:%s", event.TxHash.Hex(), event.Src.Hex(), event.Amount.String())
+	log.Debugf("extractor,tx:%s wethWithdrawal event withdrawal from:%s, number:%s", event.TxHash.Hex(), event.Src.Hex(), event.Amount.String())
 
 	return event, nil
 }

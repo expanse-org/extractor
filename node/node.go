@@ -64,7 +64,8 @@ func (n *Node) Wait() {
 }
 
 func (n *Node) Stop() {
-	extractor.UnRegistryEmitter()
+	// todo
+	//extractor.UnRegistryEmitter()
 	n.wg.Done()
 }
 

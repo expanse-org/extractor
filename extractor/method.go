@@ -82,8 +82,14 @@ func (m *MethodData) beforeUnpack(tx *ethtyp.Transaction, gasUsed, blockTime *bi
 }
 
 func (m *MethodData) unpack(tx *ethtyp.Transaction) error {
-	data := hexutil.MustDecode("0x" + tx.Input[10:])
-	return m.Abi.UnpackMethod(m.Method, m.Name, data, [][]byte{})
+	const methodStartIdx = 10
+
+	if len([]byte(tx.Input)) < methodStartIdx {
+		return fmt.Errorf("unpack method error, input length invalid:%d", len([]byte(tx.Input)))
+	}
+
+	data := hexutil.MustDecode("0x" + tx.Input[methodStartIdx:])
+	return m.Abi.UnpackMethod(m.Method, m.Name, data)
 }
 
 // afterUnpack set special fields in internal event
@@ -239,7 +245,7 @@ func (m *MethodData) getDepositEvent() (*types.WethDepositEvent, error) {
 	event.Amount = m.Value
 	event.TxInfo = m.TxInfo
 
-	log.Debugf("extractor,tx:%s wethDeposit method from:%s, to:%s, value:%s", event.TxHash.Hex(), event.From.Hex(), event.To.Hex(), event.Amount.String())
+	log.Debugf("extractor,tx:%s wethDeposit method to:%s, value:%s", event.TxHash.Hex(), event.Dst.Hex(), event.Amount.String())
 
 	return event, nil
 }
@@ -254,7 +260,7 @@ func (m *MethodData) getWithdrawalEvent() (*types.WethWithdrawalEvent, error) {
 	event.Src = m.From
 	event.TxInfo = m.TxInfo
 
-	log.Debugf("extractor,tx:%s wethWithdrawal method from:%s, to:%s, value:%s", event.TxHash.Hex(), event.From.Hex(), event.To.Hex(), event.Amount.String())
+	log.Debugf("extractor,tx:%s wethWithdrawal method from:%s, value:%s", event.TxHash.Hex(), event.Src.Hex(), event.Amount.String())
 
 	return event, nil
 }
