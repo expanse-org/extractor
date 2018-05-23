@@ -1,5 +1,6 @@
 #!/bin/sh
 #ValidateService
+WORK_DIR=/opt/loopring/relay
 
 #cron and logrotate are installed by default in ubuntu, don't check it again
 if [ ! -f /etc/logrotate.d/loopring-extractor ]; then
