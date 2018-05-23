@@ -8,10 +8,8 @@ export PATH=$PATH:$GOROOT/bin
 export GOPATH=/opt/loopring/go-src
 
 #cp svc config to svc if this node is not miner
-if [ ! -d /opt/loopring/extractor ]; then
-    sudo cp -rf $WORK_DIR/src/bin/svc/* $SVC_DIR
-    sudo chmod -R 755 $SVC_DIR
-fi
+sudo cp -rf $WORK_DIR/src/bin/svc/* $SVC_DIR
+sudo chmod -R 755 $SVC_DIR
 
 SRC_DIR=$GOPATH/src/github.com/Loopring/extractor
 if [ ! -d $SRC_DIR ]; then
