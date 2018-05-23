@@ -31,7 +31,7 @@ rm -rf $WORK_DIR/bin/*
 
 #cron and logrotate are installed by default in ubuntu, don't check it again
 if [ ! -f /etc/logrotate.d/loopring-extractor ]; then
-    sudo cp bin/logrotate/loopring-extractor /etc/logrotate.d/loopring-extractor
+    sudo cp $WORK_DIR/bin/logrotate/loopring-extractor /etc/logrotate.d/loopring-extractor
 fi
 
 pgrep cron
