@@ -313,7 +313,6 @@ type WethWithdrawalEvent struct {
 func (e *WethWithdrawalEvent) ConvertDown() *types.WethWithdrawalEvent {
 	evt := &types.WethWithdrawalEvent{}
 	evt.Amount = e.Value
-	evt.Src = e.SrcAddress
 
 	return evt
 }
