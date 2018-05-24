@@ -22,6 +22,7 @@ import (
 	"github.com/Loopring/extractor/dao"
 	"github.com/Loopring/extractor/extractor"
 	"github.com/Loopring/relay-lib/cache"
+	"github.com/Loopring/relay-lib/cloudwatch"
 	"github.com/Loopring/relay-lib/eth/accessor"
 	"github.com/Loopring/relay-lib/eth/loopringaccessor"
 	"github.com/Loopring/relay-lib/log"
@@ -50,6 +51,7 @@ func NewNode(logger *zap.Logger, globalConfig *GlobalConfig) *Node {
 	n.registerAccessor()
 	n.registerExtractor()
 	n.registerEmitter()
+	n.registerCloudWatch()
 
 	return n
 }
@@ -97,5 +99,14 @@ func (n *Node) registerExtractor() {
 func (n *Node) registerEmitter() {
 	if err := extractor.RegistryEmitter(n.globalConfig.ZkLock, n.globalConfig.KafkaProducer, n.globalConfig.KafkaConsumer, n.extractor); err != nil {
 		log.Fatalf("node start, register emitter error:%s", err.Error())
+	}
+}
+
+func (n *Node) registerCloudWatch() {
+	if !n.globalConfig.WatchCloudOpen {
+		return
+	}
+	if err := cloudwatch.Initialize(); err != nil {
+		log.Fatalf("node start, register cloud watch error:%s", err.Error())
 	}
 }
