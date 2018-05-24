@@ -87,6 +87,12 @@
 			"revisionTime": "2018-05-24T07:54:43Z"
 		},
 		{
+			"checksumSHA1": "lxH5HvYc8dexObLUKlH0D5sSwzw=",
+			"path": "github.com/Loopring/relay-lib/marketcap",
+			"revision": "bdc77f543693f25554c32c4a427626552c79a66a",
+			"revisionTime": "2018-05-24T07:54:43Z"
+		},
+		{
 			"checksumSHA1": "fw20/0H/Skz3G8MR/PY0OQ2lIVE=",
 			"path": "github.com/Loopring/relay-lib/marketutil",
 			"revision": "bdc77f543693f25554c32c4a427626552c79a66a",
