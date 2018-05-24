@@ -21,4 +21,4 @@ cd $SRC_DIR
 rm -rf ./*
 cp -r $WORK_DIR/src/* ./
 go build -ldflags -s -v  -o build/bin/extractor cmd/main.go
-cp build/bin/extractor $WORK_DIR/bin
+cp build/bin/extractor $WORK_DIR/bin/
