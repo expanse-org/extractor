@@ -198,6 +198,7 @@ type SubmitRingMethodEvent struct {
 }
 
 type RingSubmitResultEvent struct {
+	RecordId     int
 	RingHash     common.Hash `json:"ring_hash"`
 	RingUniqueId common.Hash `json:"ring_unique_id"`
 	TxHash       common.Hash `json:"tx_hash"`
@@ -256,4 +257,23 @@ type BalanceUpdateEvent struct {
 type KafkaOnChainEvent struct {
 	Data  string `json:"data"`
 	Topic string `json:"topic"`
+}
+
+//go:generate gencodec -type RingSubmitInfoEvent -field-override ringSubmitInfoMarshaling -out gen_ringSubmitInfoEvent_json.go
+type RingSubmitInfoEvent struct {
+	SubmitInfoId     int
+	Miner            common.Address
+	ProtocolAddress  common.Address
+	Ringhash         common.Hash
+	UniqueId         common.Hash
+	ProtocolData     string
+	ProtocolGas      *big.Int
+	ProtocolUsedGas  *big.Int
+	ProtocolGasPrice *big.Int
+}
+
+type ringSubmitInfoMarshaling struct {
+	ProtocolGas      *Big
+	ProtocolUsedGas  *Big
+	ProtocolGasPrice *Big
 }
