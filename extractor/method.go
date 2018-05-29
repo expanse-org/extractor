@@ -136,8 +136,7 @@ func (m *MethodData) getSubmitRingEvent() (*types.SubmitRingMethodEvent, error) 
 		return nil, fmt.Errorf("submitRing method inputs type error")
 	}
 
-	src.Protocol = m.Protocol
-	if event, err = src.ConvertDown(); err != nil {
+	if event, err = src.ConvertDown(m.Protocol); err != nil {
 		return event, fmt.Errorf("submitRing method inputs convert error:%s", err.Error())
 	}
 
@@ -165,10 +164,7 @@ func (m *MethodData) getOrderCancelledEvent() (*types.OrderCancelledEvent, error
 		return nil, fmt.Errorf("cancelOrder method inputs type error")
 	}
 
-	order, cancelAmount, _ := src.ConvertDown()
-	order.Protocol = m.Protocol
-	order.DelegateAddress = m.DelegateAddress
-	order.Hash = order.GenerateHash()
+	order, cancelAmount, _ := src.ConvertDown(m.Protocol, m.DelegateAddress)
 
 	event := &types.OrderCancelledEvent{}
 	event.TxInfo = m.TxInfo
@@ -186,9 +182,9 @@ func (m *MethodData) getCutoffAllEvent() (*types.CutoffEvent, error) {
 		return nil, fmt.Errorf("cutoffAll method inputs type error")
 	}
 
-	event := src.ConvertDown()
+	event := src.ConvertDown(m.From)
 	event.TxInfo = m.TxInfo
-	event.Owner = event.From
+
 	//log.Debugf("extractor,tx:%s cutoff method owner:%s, cutoff:%d, status:%d", event.TxHash.Hex(), event.Owner.Hex(), event.Cutoff.Int64(), event.Status)
 
 	return event, nil
@@ -200,9 +196,8 @@ func (m *MethodData) getCutoffPairEvent() (*types.CutoffPairEvent, error) {
 		return nil, fmt.Errorf("cutoffPair method inputs type error")
 	}
 
-	event := src.ConvertDown()
+	event := src.ConvertDown(m.From)
 	event.TxInfo = m.TxInfo
-	event.Owner = event.From
 
 	//log.Debugf("extractor,tx:%s cutoffpair method owenr:%s, token1:%s, token2:%s, cutoff:%d", event.TxHash.Hex(), event.Owner.Hex(), event.Token1.Hex(), event.Token2.Hex(), event.Cutoff.Int64())
 
@@ -215,9 +210,8 @@ func (m *MethodData) getApproveEvent() (*types.ApprovalEvent, error) {
 		return nil, fmt.Errorf("approve method inputs type error")
 	}
 
-	event := src.ConvertDown()
+	event := src.ConvertDown(m.From)
 	event.TxInfo = m.TxInfo
-	event.Owner = m.From
 
 	//log.Debugf("extractor,tx:%s approve method owner:%s, spender:%s, value:%s", event.TxHash.Hex(), event.Owner.Hex(), event.Spender.Hex(), event.Amount.String())
 
@@ -230,8 +224,7 @@ func (m *MethodData) getTransferEvent() (*types.TransferEvent, error) {
 		return nil, fmt.Errorf("transfer method inputs type error")
 	}
 
-	event := src.ConvertDown()
-	event.Sender = m.From
+	event := src.ConvertDown(m.From)
 	event.TxInfo = m.TxInfo
 
 	//log.Debugf("extractor,tx:%s transfer method sender:%s, receiver:%s, value:%s", event.TxHash.Hex(), event.Sender.Hex(), event.Receiver.Hex(), event.Amount.String())
@@ -256,8 +249,7 @@ func (m *MethodData) getWithdrawalEvent() (*types.WethWithdrawalEvent, error) {
 		return nil, fmt.Errorf("wethWithdrawal method inputs type error")
 	}
 
-	event := src.ConvertDown()
-	event.Src = m.From
+	event := src.ConvertDown(m.From)
 	event.TxInfo = m.TxInfo
 
 	//log.Debugf("extractor,tx:%s wethWithdrawal method from:%s, value:%s", event.TxHash.Hex(), event.Src.Hex(), event.Amount.String())
