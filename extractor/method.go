@@ -136,7 +136,7 @@ func (m *MethodData) getSubmitRingEvent() (*types.SubmitRingMethodEvent, error) 
 		return nil, fmt.Errorf("submitRing method inputs type error")
 	}
 
-	if event, err = src.ConvertDown(m.Protocol); err != nil {
+	if event, err = src.ConvertDown(m.Protocol, m.DelegateAddress); err != nil {
 		return event, fmt.Errorf("submitRing method inputs convert error:%s", err.Error())
 	}
 
