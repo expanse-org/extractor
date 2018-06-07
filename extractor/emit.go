@@ -20,6 +20,7 @@ package extractor
 
 import (
 	"fmt"
+	"github.com/Loopring/extractor/watch"
 	"github.com/Loopring/relay-lib/eth/types"
 	ex "github.com/Loopring/relay-lib/extractor"
 	"github.com/Loopring/relay-lib/kafka"
@@ -78,8 +79,9 @@ func Produce(src interface{}) error {
 		return err
 	}
 	producer.SendMessage(KAFKA_PRODUCER_TOPIC, event, KAFKA_PRODUCER_KEY)
-
 	log.Debugf("emit topic:%s, data:%s", event.Topic, event.Data)
+
+	watch.ReportHeartBeat()
 
 	return nil
 }

@@ -21,10 +21,10 @@ package watch
 import "github.com/Loopring/relay-lib/cloudwatch"
 
 const (
-	Metric_OnChainEvent_Emitted = ""
+	Metric_OnChainEvent_Emitted = "extractor_onchain_event"
 )
 
 // todo
-func WatchEmittedEvent() {
+func ReportHeartBeat() {
 	cloudwatch.PutHeartBeatMetric(Metric_OnChainEvent_Emitted)
 }
