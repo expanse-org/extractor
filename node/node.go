@@ -23,7 +23,6 @@ import (
 	"github.com/Loopring/extractor/extractor"
 	"github.com/Loopring/extractor/watch"
 	"github.com/Loopring/relay-lib/cache"
-	"github.com/Loopring/relay-lib/cloudwatch"
 	"github.com/Loopring/relay-lib/eth/accessor"
 	"github.com/Loopring/relay-lib/eth/loopringaccessor"
 	"github.com/Loopring/relay-lib/log"
