@@ -21,6 +21,7 @@ package node
 import (
 	"github.com/Loopring/extractor/dao"
 	"github.com/Loopring/extractor/extractor"
+	"github.com/Loopring/extractor/watch"
 	"github.com/Loopring/relay-lib/cache"
 	"github.com/Loopring/relay-lib/cloudwatch"
 	"github.com/Loopring/relay-lib/eth/accessor"
@@ -103,10 +104,5 @@ func (n *Node) registerEmitter() {
 }
 
 func (n *Node) registerCloudWatch() {
-	if !n.globalConfig.WatchCloudOpen {
-		return
-	}
-	if err := cloudwatch.Initialize(); err != nil {
-		log.Fatalf("node start, register cloud watch error:%s", err.Error())
-	}
+	watch.Initialize(n.globalConfig.WatchCloudOpen)
 }

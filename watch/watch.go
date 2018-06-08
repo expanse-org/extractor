@@ -18,13 +18,32 @@
 
 package watch
 
-import "github.com/Loopring/relay-lib/cloudwatch"
+import (
+	"github.com/Loopring/relay-lib/cloudwatch"
+	"github.com/Loopring/relay-lib/log"
+)
 
 const (
 	Metric_OnChainEvent_Emitted = "extractor_onchain_event"
 )
 
-// todo
+var watchOpen bool
+
+func Initialize(open bool) {
+	if !open {
+		return
+	}
+
+	if err := cloudwatch.Initialize(); err != nil {
+		log.Fatalf("node start, register cloud watch error:%s", err.Error())
+	}
+
+	watchOpen = open
+}
+
 func ReportHeartBeat() {
+	if !watchOpen {
+		return
+	}
 	cloudwatch.PutHeartBeatMetric(Metric_OnChainEvent_Emitted)
 }
