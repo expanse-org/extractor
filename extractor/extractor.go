@@ -21,6 +21,7 @@ package extractor
 import (
 	"fmt"
 	"github.com/Loopring/extractor/dao"
+	"github.com/Loopring/extractor/watch"
 	"github.com/Loopring/relay-lib/eth/accessor"
 	"github.com/Loopring/relay-lib/eth/contract"
 	ethtyp "github.com/Loopring/relay-lib/eth/types"
@@ -221,6 +222,9 @@ func (l *ExtractorServiceImpl) ProcessBlock() error {
 
 	blockEvent.IsFinished = true
 	Produce(blockEvent)
+
+	watch.ReportHeartBeat()
+
 	return nil
 }
 
