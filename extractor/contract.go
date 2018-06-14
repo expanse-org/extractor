@@ -148,6 +148,8 @@ func (processor *AbiProcessor) loadProtocolAddress() {
 		log.Infof("extractor,contract protocol %s->%s", v.Symbol, v.Protocol.Hex())
 	}
 
+	processor.loadPersonalTokens()
+
 	for _, v := range lpraccessor.ProtocolAddresses() {
 		protocolSymbol := "loopring"
 		delegateSymbol := "transfer_delegate"
@@ -326,4 +328,14 @@ func (processor *AbiProcessor) loadTokenTransferDelegateProtocol() {
 		processor.events[eventData.Id] = eventData
 		log.Infof("extractor,contract event name:%s -> key:%s", eventData.Name, eventData.Id.Hex())
 	}
+}
+
+// todo: consume kafka message and add token in protocols
+func (process *AbiProcessor) addToken(token *types.Token) error {
+	return nil
+}
+
+// todo: get tokens from redis, and delete duplicated tokens
+func (process *AbiProcessor) loadPersonalTokens() error {
+	return nil
 }

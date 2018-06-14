@@ -20,17 +20,17 @@ package extractor
 
 import (
 	"fmt"
-	"github.com/Loopring/relay-lib/eth/types"
+	ethtyp "github.com/Loopring/relay-lib/eth/types"
 	ex "github.com/Loopring/relay-lib/extractor"
 	"github.com/Loopring/relay-lib/kafka"
 	"github.com/Loopring/relay-lib/log"
+	"github.com/Loopring/relay-lib/types"
 	"github.com/Loopring/relay-lib/zklock"
 )
 
 const (
-	ZKNAME_EXTRACTOR                = "extractor"
-	KAFKA_PRODUCER_TOPIC            = kafka.Kafka_Topic_Extractor_EventOnChain
-	KAFKA_PRODUCER_KEY              = "extractor"
+	ZKNAME_EXTRACTOR   = "extractor"
+	KAFKA_PRODUCER_KEY = "extractor"
 )
 
 var (
@@ -57,10 +57,12 @@ func RegistryEmitter(zkOpt zklock.ZkLockConfig, producerOpt, consumerOpt kafka.K
 	}
 	register = &kafka.ConsumerRegister{}
 	register.Initialize(consumerOpt.Brokers)
-	if err := register.RegisterTopicAndHandler(kafka.Kafka_Topic_Extractor_PendingTransaction, kafka.Kafka_Group_Extractor_PendingTransaction, types.Transaction{}, service.WatchingPendingTransaction); err != nil {
+	if err := register.RegisterTopicAndHandler(kafka.Kafka_Topic_Extractor_PendingTransaction, kafka.Kafka_Group_Extractor_PendingTransaction, ethtyp.Transaction{}, service.WatchingPendingTransaction); err != nil {
 		return err
 	}
-	if err := register.RegisterTopicAndHandler(kafka.Kafka_Topic_Extractor_AddToken, KAFKA_CONSUMER_GROUP)
+	if err := register.RegisterTopicAndHandler(kafka.Kafka_Topic_Extractor_AddToken, kafka.Kafka_Group_Extractor_AddToken, types.Token{}, service.WatchingAddToken); err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -76,7 +78,7 @@ func Produce(src interface{}) error {
 	if err != nil {
 		return err
 	}
-	producer.SendMessage(KAFKA_PRODUCER_TOPIC, event, KAFKA_PRODUCER_KEY)
+	producer.SendMessage(kafka.Kafka_Topic_Extractor_EventOnChain, event, KAFKA_PRODUCER_KEY)
 	log.Debugf("emit topic:%s, data:%s", event.Topic, event.Data)
 
 	return nil
