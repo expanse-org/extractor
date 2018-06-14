@@ -28,11 +28,12 @@ import (
 )
 
 const (
-	ZKNAME_EXTRACTOR     = "extractor"
-	KAFKA_CONSUMER_TOPIC = kafka.Kafka_Topic_Extractor_PendingTransaction
-	KAFKA_CONSUMER_GROUP = kafka.Kafka_Group_Extractor_PendingTransaction
-	KAFKA_PRODUCER_TOPIC = kafka.Kafka_Topic_Extractor_EventOnChain
-	KAFKA_PRODUCER_KEY   = "extractor"
+	ZKNAME_EXTRACTOR                = "extractor"
+	KAFKA_CONSUMER_TOPIC_PENDING_TX = kafka.Kafka_Topic_Extractor_PendingTransaction
+	KAFKA_CONSUMER_TOPIC_NEW_TOKEN  = kafka.kafka
+	KAFKA_CONSUMER_GROUP            = kafka.Kafka_Group_Extractor_PendingTransaction
+	KAFKA_PRODUCER_TOPIC            = kafka.Kafka_Topic_Extractor_EventOnChain
+	KAFKA_PRODUCER_KEY              = "extractor"
 )
 
 var (
@@ -59,7 +60,7 @@ func RegistryEmitter(zkOpt zklock.ZkLockConfig, producerOpt, consumerOpt kafka.K
 	}
 	register = &kafka.ConsumerRegister{}
 	register.Initialize(consumerOpt.Brokers)
-	if err := register.RegisterTopicAndHandler(KAFKA_CONSUMER_TOPIC, KAFKA_CONSUMER_GROUP, types.Transaction{}, service.WatchingPendingTransaction); err != nil {
+	if err := register.RegisterTopicAndHandler(KAFKA_CONSUMER_TOPIC_PENDING_TX, KAFKA_CONSUMER_GROUP, types.Transaction{}, service.WatchingPendingTransaction); err != nil {
 		return err
 	}
 
