@@ -9,8 +9,8 @@ watch_cloud_open = true
     development = true
     disable_stacktrace = false
     encoding = "console"
-    output_paths = ["zap.log", "stderr"]
-    error_output_paths = ["err.log"]
+    output_paths = ["/opt/loopring/extractor/logs/zap.log", "stderr"]
+    error_output_paths = ["/opt/loopring/extractor/logs/err.log"]
         [log.encoder_config]
         message_key = "msg"
         level_key = "level"
@@ -23,7 +23,7 @@ watch_cloud_open = true
     hostname = "127.0.0.1"
     port = "3306"
     user = "root"
-    password = "111111"
+    password = "yourpassword"
     db_name = "loopring_miner_v1.1"
     table_prefix = "lpr_"
     max_open_connections = 10
@@ -57,7 +57,7 @@ watch_cloud_open = true
          "v1.5.1" = "0x781870080c8c24a2fd6882296c49c837b06a65e6"
 
 [market]
-    token_file = "tokens.json"
+    token_file = "/opt/loopring/extractor/config/tokens.json"
 
 [zk_lock]
     zk_servers = "127.0.0.1:2181"
