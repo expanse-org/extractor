@@ -20,8 +20,9 @@ Loopring Extractor(解析器)是路印技术生态重要组成部分，遍历以
 * kafka消息队列--将解析的数据及分叉数据使用kfaka消息队列发送出去
 
 ## 重要参数列表
-| 参数 | 释义 |
-| ----------| ------------|
+
+| 参数         | 释义         |
+|--------------|------------|
 | log.output_paths| log输出(如果使用docker运行,需设置为/opt/loopring/extractor/logs/zap.log)|
 | log.error_output_paths| err输出(如果使用docker运行,需设置为/opt/loopring/extractor/logs/err.log)|
 |accessor.raw_urls|以太坊节点列表|
