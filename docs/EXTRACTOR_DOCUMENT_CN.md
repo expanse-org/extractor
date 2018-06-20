@@ -20,22 +20,24 @@ Loopring Extractor(解析器)是路印技术生态重要组成部分，遍历以
 * kafka消息队列--将解析的数据及分叉数据使用kfaka消息队列发送出去
 
 ## 重要参数
-* log.output_paths--log输出(如果使用docker运行,需设置为/opt/loopring/extractor/logs/zap.log)
-* log.error_output_paths--err输出(如果使用docker运行,需设置为/opt/loopring/extractor/logs/err.log)
-* accessor.raw_urls--以太坊节点列表
-* accessor.fetch_tx_retry_count--获取transaction数据不成功时重试次数
-* extractor.start_block_number--解析起始块(第一次运行extractor默认值,后续使用mysql数据)
-* extractor.end_block_number--解析终止块(非debug模式下为0)
-* extractor.confirm_block_number--延迟确认块
-* extractor.debug--debug模式开关(控制部分log信息及endBlockNumber,非debug模式下为false)
-* loopring_protocol.implAbi--路印协议impl abi
-* loopring_protocol.delegateAbi--路印协议delegate abi
-* loopring_protocol.tokenRegistryAbi--路印协议token registry abi
-* loopring_protocol.address--合约地址map
-* market.token_file--中继支持的代币列表文件
-* zk_lock.zk_servers--zookeeper服务节点地址
-* kafka_producer.brokers--kafka生产者地址列表
-* kafka_consumer.brokers--kafka消费者地址列表
+|parameter| desc|
+|:-|:-|
+|log.output_paths|log输出(如果使用docker运行,需设置为/opt/loopring/extractor/logs/zap.log)|
+|log.error_output_paths|err输出(如果使用docker运行,需设置为/opt/loopring/extractor/logs/err.log)|
+|accessor.raw_urls|以太坊节点列表|
+|accessor.fetch_tx_retry_count|获取transaction数据不成功时重试次数|
+|extractor.start_block_number|解析起始块(第一次运行extractor默认值,后续使用mysql数据)|
+|extractor.end_block_number|解析终止块(非debug模式下为0)|
+|extractor.confirm_block_number|延迟确认块|
+|extractor.debug|debug模式开关(控制部分log信息及endBlockNumber,非debug模式下为false)|
+|loopring_protocol.implAbi|路印协议impl abi|
+|loopring_protocol.delegateAbi|路印协议delegate abi|
+|loopring_protocol.tokenRegistryAbi|路印协议token registry abi|
+|loopring_protocol.address|合约地址map|
+|market.token_file|中继支持的代币列表文件|
+|zk_lock.zk_servers|zookeeper服务节点地址|
+|kafka_producer.brokers|kafka生产者地址列表|
+|kafka_consumer.brokers|kafka消费者地址列表|
 
 ## 编译
 从github上拉取代码后,运行
