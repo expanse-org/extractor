@@ -19,11 +19,11 @@ Loopring Extractor(解析器)是路印技术生态重要组成部分，遍历以
 * 分叉检测--根据块号及parent hash判断是否有分叉,如果有分叉,生成中继/矿工支持的分叉通知数据类型
 * kafka消息队列--将解析的数据及分叉数据使用kfaka消息队列发送出去
 
-## 重要参数
-|parameter| desc|
-|:-|:-|
-|log.output_paths|log输出(如果使用docker运行,需设置为/opt/loopring/extractor/logs/zap.log)|
-|log.error_output_paths|err输出(如果使用docker运行,需设置为/opt/loopring/extractor/logs/err.log)|
+## 重要参数列表
+| 参数 | 释义 |
+| ----------| ------------|
+| log.output_paths| log输出(如果使用docker运行,需设置为/opt/loopring/extractor/logs/zap.log)|
+| log.error_output_paths| err输出(如果使用docker运行,需设置为/opt/loopring/extractor/logs/err.log)|
 |accessor.raw_urls|以太坊节点列表|
 |accessor.fetch_tx_retry_count|获取transaction数据不成功时重试次数|
 |extractor.start_block_number|解析起始块(第一次运行extractor默认值,后续使用mysql数据)|
