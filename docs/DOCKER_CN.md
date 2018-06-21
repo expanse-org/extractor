@@ -21,6 +21,7 @@ docker run --name extractor -idt -v your_log_path:/opt/loopring/extractor/log -v
 ```
 
 ## 历史版本
+
 | 版本号         | 描述         |
-|---------------|-------------|
-|v1.5.0         |release初始版本|
+|--------------|------------|
+| v1.5.0| release初始版本|
