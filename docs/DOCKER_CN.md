@@ -12,7 +12,7 @@ docker pull loopring/extractor
 ```bash
 mkdir your_log_path your_config_path
 ```
-* 配置extractor.toml文件，[参考](https://loopring.github.io/extractor/EXTRACTOR_DOCUMENT_EN)
+* 配置extractor.toml文件，[参考](https://loopring.github.io/extractor/EXTRACTOR_DOCUMENT_CN)
 * telnet测试mysql,redis,zk,kafka,ethereum rpc相关端口能否连接
 
 ## 运行
