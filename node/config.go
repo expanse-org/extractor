@@ -62,8 +62,7 @@ type GlobalConfig struct {
 	Mysql            libdao.MysqlOptions
 	Redis            redis.RedisOptions
 	ZkLock           zklock.ZkLockConfig
-	KafkaProducer    kafka.KafkaOptions
-	KafkaConsumer    kafka.KafkaOptions
+	Kafka            kafka.KafkaOptions
 	Extractor        extractor.ExtractorOptions
 	Accessor         accessor.AccessorOptions
 	LoopringProtocol lpraccssor.LoopringProtocolOptions
