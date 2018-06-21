@@ -22,7 +22,7 @@ Loopring Extractor(解析器)，遍历以太坊block及transaction将路印中�
 |extractor.start_block_number|解析起始块(第一次运行extractor默认值,后续使用mysql数据)|
 |extractor.end_block_number|解析终止块(非debug模式下为0)|
 |extractor.confirm_block_number|延迟确认块|
-|extractor.debug|debug模式开关(控制部分log信息及endBlockNumber,非debug模式下为false)|
+|extractor.debug|debug模式开关(非必要log打印开关,非debug模式下为false)|
 |loopring_protocol.implAbi|路印协议impl abi|
 |loopring_protocol.delegateAbi|路印协议delegate abi|
 |loopring_protocol.tokenRegistryAbi|路印协议token registry abi|
