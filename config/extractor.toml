@@ -3,9 +3,10 @@ title = "extractor"
 owner = "Loopring corporation"
 
 # aws cloudwatch switch
-# push heart beat message
+# push heart beat message, proposed false
 watch_cloud_open = false
 
+# zap log
 [log]
     level = "debug"
     development = true
@@ -21,6 +22,8 @@ watch_cloud_open = false
         encode_level = "lowercase"
         encode_time = "iso8601"
 
+# mysql configs
+# debug: mysql execute log will be printed while debug is true, proposed false
 [mysql]
     hostname = "127.0.0.1"
     port = "3306"
@@ -41,10 +44,16 @@ watch_cloud_open = false
     max_idle = 10
     max_active = 100
 
+# accessor
+# raw_urls: ethereum node url list
+# fetch_tx_retry_count: retry times while get transaction failed
 [accessor]
     raw_urls = ["http://127.0.0.1:8545"]
     fetch_tx_retry_count = 120
 
+# extractor
+# start_block_number: traversal begging, used only once
+# end_block_number: traversal end, proposed 0(will be settled as an const value)
 [extractor]
     start_block_number = 42879
     end_block_number = 0

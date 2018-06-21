@@ -29,8 +29,7 @@ Loopring Extractor(解析器)，遍历以太坊block及transaction将路印中�
 |loopring_protocol.address|合约地址map|
 |market.token_file|中继支持的代币列表文件|
 |zk_lock.zk_servers|zookeeper服务节点地址|
-|kafka_producer.brokers|kafka生产者地址列表|
-|kafka_consumer.brokers|kafka消费者地址列表|
+|kafka.brokers|kafka broker列表|
 
 ## 编译
 从github上拉取代码后,运行

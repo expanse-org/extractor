@@ -37,8 +37,7 @@ all of the events will send to relay and miner access of kafka.
 |loopring_protocol.address|N|
 |market.token_file|N|
 |zk_lock.zk_servers|N|
-|kafka_producer.brokers|N|
-|kafka_consumer.brokers|N|
+|kafka.brokers|N|
 
 ## Build
 ```bash
