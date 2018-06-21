@@ -32,7 +32,8 @@ go build -ldflags -s -v  -o build/bin/extractor cmd/main.go
 extractor --config=config_file
 ```
 
-## Docker
-[English version](https://loopring.github.io/extractor/DOCKER_EN)
+## Deploy
+* 
+* [Docker](https://loopring.github.io/extractor/DOCKER_EN)
 
 ## Support

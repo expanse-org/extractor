@@ -51,8 +51,10 @@ go build -ldflags -s -v  -o build/bin/extractor cmd/main.go
 extractor --config=config_file
 ```
 
-## docker
-[中文文档](https://loopring.github.io/extractor/DOCKER_CN)
+## 部署
+* 可执行文件部署-- 环境:gcc, golang(v1.9.0以上), <br>
+    部署前请根据配置文件mysql,redis,kafka,zk相关端口进行telnet测试,确保这些依赖能正常访问
+* [docker](https://loopring.github.io/extractor/DOCKER_CN)
 
 ## 支持
 请访问官方网站获取联系方式，获得帮助: https://loopring.org
