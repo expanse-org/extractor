@@ -21,6 +21,25 @@ all of the events will send to relay and miner access of kafka.
 
 ## Config
 
+| parameter         | description         |
+|--------------|------------|
+| log.output_paths| N|
+| log.error_output_paths| N|
+|accessor.raw_urls|N|
+|accessor.fetch_tx_retry_count|N|
+|extractor.start_block_number|N|
+|extractor.end_block_number|N|
+|extractor.confirm_block_number|N|
+|extractor.debug|N|
+|loopring_protocol.implAbi|N|
+|loopring_protocol.delegateAbi|N|
+|loopring_protocol.tokenRegistryAbi|N|
+|loopring_protocol.address|N|
+|market.token_file|N|
+|zk_lock.zk_servers|N|
+|kafka_producer.brokers|N|
+|kafka_consumer.brokers|N|
+
 ## Build
 ```bash
 cd $GOPATH/src/github.com/Loopring/extractor
