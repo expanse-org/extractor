@@ -41,9 +41,9 @@ CONFIG SET protected-mode no
 ```
 或者使用密码访问redis
 
-* ethereum-node: 允许容器访问宿主eth节点:
-运行geth等客户端时:
---rpc(打开rpc服务)
+* ethereum-node: 允许容器访问宿主eth节点:<br>
+运行geth等客户端时:<br>
+--rpc(打开rpc服务)<br>
 --rpcaddr(指定rpc监听地址, 默认localhost)
 
 * zookeeper-kafka: 允许容器访问zk-kafka相关端口
