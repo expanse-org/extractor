@@ -4,12 +4,6 @@
 Loopring Extractor(解析器)，遍历以太坊block及transaction将路印中继支持的合约事件及方法<br>
 从交易中提取出来，并转换成中继使用的数据类型，最后使用kafka消息队列发送给中继及旷工。
 
-## 依赖
-* mysql数据库
-* redis缓存
-* 以太坊节点(集群)
-* zookeeper-kafka消息队列
-
 ## 工作流程
 * 确定起始块--解析器启动后首先根据配置文件参数及数据库存储的block数据确定起始解析blockNumber
 * 获取节点数据--从起始块开始遍历以太坊节点block,并批量获取transaction&transactionReceipt
@@ -50,6 +44,12 @@ go build -ldflags -s -v  -o build/bin/extractor cmd/main.go
 ```bash
 extractor --config=config_file
 ```
+
+## 依赖
+* mysql数据库
+* redis缓存
+* 以太坊节点(集群)
+* zookeeper-kafka消息队列
 
 ## 部署
 * 可执行文件部署-- 环境:gcc, golang(v1.9.0以上), <br>
