@@ -31,7 +31,7 @@ GRANT ALL PRIVILEGES ON *.* TO 'username'@'%' IDENTIFIED BY 'yourpassword' WITH 
 ```bash
 # bind 127.0.0.1
 ```
-另外，关闭保护模式:
+另外，关闭保护模式, 在redis.conf中设置:
 ```bash
 protected-mode no
 ```
