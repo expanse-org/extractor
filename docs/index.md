@@ -35,6 +35,7 @@ extractor --config=your_config_file_path
 
 ## Configuration and Deploy
 - [Deploy](https://github.com/Loopring/relay-cluster/wiki/%E9%83%A8%E7%BD%B2extractor)
+- [Docker](docker_english)
 
 ## Documents in Other Languages
 - [中文文档](chinese)
