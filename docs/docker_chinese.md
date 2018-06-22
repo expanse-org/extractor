@@ -1,6 +1,6 @@
 # Loopring Extractor Docker 中文文档
 
-loopring开发团队提供loopring/extractor镜像,latest最新版本是v1.5.0。<br>
+loopring开发团队提供loopring/extractor镜像,最新版本是v1.5.0。<br>
 
 ## 部署
 * 获取docker镜像

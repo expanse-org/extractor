@@ -1,6 +1,6 @@
 # Loopring Extractor Docker
 
-The loopring development team provides the loopring/extractor image. The latest latest version is v1.5.0
+The loopring development team provides the loopring/extractor image. The latest version is v1.5.0
 
 ## Run
 get the latest docker image
