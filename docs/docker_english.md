@@ -11,7 +11,7 @@ create log&config dir
 ```bash
 mkdir your_log_path your_config_path
 ```
-config extractor.toml [参考](https://loopring.github.io/extractor/EXTRACTOR_DOCUMENT_CN)<br>
+config extractor.toml [reference](https://loopring.github.io/extractor/EXTRACTOR_DOCUMENT_CN)<br>
 
 before deployment, perform telnet tests according to the ports related to the configuration files mysql, redis, kafka, and zk to ensure that these dependencies can be accessed normally.
 
