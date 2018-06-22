@@ -11,18 +11,9 @@ Loopring Extractor(解析器)，在路印生态系统中负责维护链上数据
 * 分叉检测--根据块号及parent hash判断是否有分叉,如果有分叉,生成中继/矿工支持的分叉通知数据类型
 * kafka消息队列--将解析的数据及分叉数据使用kfaka消息队列发送出去
 
-## 编译
-从github上拉取代码后,运行
-```bash
-cd $GOPATH/src/github.com/Loopring/extractor
-go build -ldflags -s -v  -o build/bin/extractor cmd/main.go
-```
-将在项目build/bin目录下生成extractor可执行文件
-
-## 运行
-```bash
-extractor --config=config_file
-```
+## 环境
+* gcc
+* golang(v1.9.0以上)
 
 ## 依赖
 * mysql数据库
@@ -30,9 +21,20 @@ extractor --config=config_file
 * 以太坊节点(集群)
 * zookeeper-kafka消息队列
 
+## 快速开始
+从github上拉取代码后,运行
+```bash
+cd $GOPATH/src/github.com/Loopring/extractor
+go build -ldflags -s -v  -o build/bin/extractor cmd/main.go
+```
+将在项目build/bin目录下生成extractor可执行文件
+
+```bash
+extractor --config=you_config_file_path
+```
+
 ## 部署
-* 可执行文件部署-- 环境:gcc, golang(v1.9.0以上), <br>
-    部署前请根据配置文件mysql,redis,kafka,zk相关端口进行telnet测试,确保这些依赖能正常访问
+* [参考](https://github.com/Loopring/relay-cluster/wiki/%E9%83%A8%E7%BD%B2extractor)
 * [docker](https://loopring.github.io/extractor/DOCKER_CN)
 
 ## 支持
