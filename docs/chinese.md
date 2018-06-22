@@ -38,7 +38,7 @@ extractor --config=you_config_file_path
 
 ## 部署
 - [参考](https://github.com/Loopring/relay-cluster/wiki/%E9%83%A8%E7%BD%B2extractor)
-- [docker](https://loopring.github.io/extractor/DOCKER_CN)
+- [docker](docker_chinese)
 
 ## 支持
 请访问官方网站获取联系方式，获得帮助: https://loopring.org
