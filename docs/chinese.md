@@ -22,7 +22,7 @@ Loopring Extractor(解析器)，在路印生态系统中负责维护链上数据
 * zookeeper-kafka消息队列
 
 ## 配置文件
-- [参考](https://github.com/Loopring/relay-cluster/docs/deploy/deploy_extractor_cn#%E9%83%A8%E7%BD%B2%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6)
+- [参考](https://loopring.github.io/relay-cluster/deploy/deploy_extractor_cn.html#%E9%83%A8%E7%BD%B2%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6)
 
 ## 快速开始
 从github上拉取代码后,运行
@@ -37,7 +37,7 @@ extractor --config=you_config_file_path
 ```
 
 ## 部署
-- [参考](https://github.com/Loopring/relay-cluster/docs/deploy/deploy_extractor_cn)
+- [参考](https://loopring.github.io/relay-cluster/deploy/deploy_extractor_cn.html)
 - [docker](docker_chinese)
 
 ## 支持

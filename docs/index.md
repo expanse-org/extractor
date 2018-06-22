@@ -33,8 +33,8 @@ go build -ldflags -s -v  -o build/bin/extractor cmd/main.go
 extractor --config=your_config_file_path
 ```
 
-## Configuration and Deploy
-- [Deploy](https://github.com/Loopring/relay-cluster/wiki/%E9%83%A8%E7%BD%B2extractor)
+## Deploy
+- [Reference](https://github.com/Loopring/relay-cluster/wiki/%E9%83%A8%E7%BD%B2extractor)
 - [Docker](docker)
 
 ## Documents in Other Languages
