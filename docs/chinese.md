@@ -1,4 +1,4 @@
-# Loopring Extractor 中文文档
+## 关于 Extractor
 
 Loopring Extractor(解析器)，在路印生态系统中负责维护链上数据，给relay(中继)&miner(旷工)提供数据支持.<br>
 解析器通过遍历以太坊block及transaction将路印中继支持的合约事件及方法<br>
