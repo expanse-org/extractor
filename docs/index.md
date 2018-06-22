@@ -24,7 +24,7 @@ It is extracted from the transaction and converted to the data type used by the 
 
 ## Configuration
 
-- [reference](https://github.com/Loopring/relay-cluster/wiki/%E9%83%A8%E7%BD%B2extractor#%E9%83%A8%E7%BD%B2%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6)
+- [reference](https://loopring.github.io/relay-cluster/deploy/deploy_index.html#%E9%83%A8%E7%BD%B2%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6)
 
 ## Quick start
 After pulling the code from github, run:
@@ -34,7 +34,7 @@ extractor --config=your_config_file_path
 ```
 
 ## Deploy
-- [reference](https://github.com/Loopring/relay-cluster/wiki/%E9%83%A8%E7%BD%B2extractor)
+- [reference](https://loopring.github.io/relay-cluster/deploy/deploy_index.html#)
 - [docker](docker)
 
 ## Documents in Other Languages
