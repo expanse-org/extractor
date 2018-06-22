@@ -1,1 +1,20 @@
+## About
+extractor 
 
+## Environment
+
+- gcc
+- golang(above v1.9.0)
+
+## Quick start
+compile and run
+```
+go build -ldflags -s -v  -o build/bin/extractor cmd/main.go
+extractor --config=your_config_file_path
+```
+
+## Configuration and Deploy
+- [部署](https://github.com/Loopring/relay-cluster/wiki/%E9%83%A8%E7%BD%B2extractor)
+
+## Documents in Other Languages
+- [中文文档](chinese)
