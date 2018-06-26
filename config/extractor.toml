@@ -2,10 +2,6 @@ title = "extractor"
 
 owner = "Loopring corporation"
 
-# aws cloudwatch switch
-# push heart beat message, proposed false
-watch_cloud_open = false
-
 # zap log
 [log]
     level = "debug"
@@ -76,3 +72,9 @@ watch_cloud_open = false
 
 [kafka]
     brokers = ["127.0.0.1:9092"]
+
+# aws cloudwatch switch
+# push heart beat message, proposed false
+[cloud_watch]
+    enabled = false
+    region = "ap-northeast-1"

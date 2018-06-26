@@ -97,12 +97,6 @@ func (processor *AbiProcessor) GetMethodName(tx *ethtyp.Transaction) string {
 	return contract.METHOD_UNKNOWN
 }
 
-// SupportedContract judge protocol have ever been load
-func (processor *AbiProcessor) SupportedContract(protocol common.Address) bool {
-	_, ok := processor.protocols[protocol]
-	return ok
-}
-
 // SupportedEvents supported contract events and unsupported erc20 events
 func (processor *AbiProcessor) SupportedEvents(receipt *ethtyp.TransactionReceipt) bool {
 	if receipt == nil || len(receipt.Logs) == 0 {
@@ -131,6 +125,13 @@ func (processor *AbiProcessor) SupportedEvents(receipt *ethtyp.TransactionReceip
 // SupportedMethod only supported contracts method
 func (processor *AbiProcessor) SupportedMethod(tx *ethtyp.Transaction) bool {
 	protocol := common.HexToAddress(tx.To)
+	tokens, _ := util.GetAllCustomTokenList()
+	for _, v := range tokens {
+		if v.Address == protocol {
+
+		}
+	}
+
 	if _, ok := processor.protocols[protocol]; !ok {
 		return false
 	}
@@ -148,8 +149,7 @@ func (processor *AbiProcessor) loadProtocolAddress() {
 		processor.protocols[v.Protocol] = v.Symbol
 		log.Infof("extractor,contract protocol %s->%s", v.Symbol, v.Protocol.Hex())
 	}
-
-	processor.loadPersonalTokens()
+	processor.AddCustomTokens()
 
 	for _, v := range lpraccessor.ProtocolAddresses() {
 		protocolSymbol := "loopring"
@@ -331,12 +331,17 @@ func (processor *AbiProcessor) loadTokenTransferDelegateProtocol() {
 	}
 }
 
-// todo: consume kafka message and add token in protocols
-func (process *AbiProcessor) addToken(token *types.Token) error {
-	return nil
+func (processor *AbiProcessor) IsTokenSupported(token common.Address) bool {
+	_, ok := processor.protocols[token]
+	return ok
 }
 
-// todo: get tokens from redis, and delete duplicated tokens
-func (process *AbiProcessor) loadPersonalTokens() error {
-	return nil
+func (processor *AbiProcessor) AddCustomTokens() {
+	tokens, _ := util.GetAllCustomTokenList()
+	for _, v := range tokens {
+		if !processor.IsTokenSupported(v.Address) {
+			processor.protocols[v.Address] = v.Symbol
+			log.Infof("extractor,contract protocol %s->%s", v.Symbol, v.Address.Hex())
+		}
+	}
 }

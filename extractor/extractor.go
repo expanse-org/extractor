@@ -47,7 +47,6 @@ type ExtractorService interface {
 	Stop()
 	ForkProcess(block *types.Block) error
 	WatchingPendingTransaction(input interface{}) error
-	WatchingAddToken(input interface{}) error
 }
 
 type ExtractorServiceImpl struct {
@@ -172,12 +171,6 @@ func (l *ExtractorServiceImpl) WatchingPendingTransaction(input interface{}) err
 	return nil
 }
 
-// todo
-func (l *ExtractorServiceImpl) WatchingAddToken(input interface{}) error {
-	token := input.(*types.Token)
-	return l.processor.addToken(token)
-}
-
 func (l *ExtractorServiceImpl) ProcessBlock() error {
 	inter, err := l.iterator.Next()
 	if err != nil {
@@ -216,6 +209,9 @@ func (l *ExtractorServiceImpl) ProcessBlock() error {
 	blockEvent.BlockTime = block.Timestamp.Int64()
 	blockEvent.IsFinished = false
 	Produce(blockEvent)
+
+	// add custom tokens
+	l.processor.AddCustomTokens()
 
 	if len(block.Transactions) > 0 {
 		for idx, transaction := range block.Transactions {

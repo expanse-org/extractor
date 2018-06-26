@@ -103,5 +103,5 @@ func (n *Node) registerEmitter() {
 }
 
 func (n *Node) registerCloudWatch() {
-	watch.Initialize(n.globalConfig.WatchCloudOpen)
+	watch.Initialize(n.globalConfig.CloudWatch)
 }

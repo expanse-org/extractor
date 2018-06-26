@@ -25,6 +25,7 @@ import (
 
 	"github.com/Loopring/extractor/extractor"
 	"github.com/Loopring/relay-lib/cache/redis"
+	"github.com/Loopring/relay-lib/cloudwatch"
 	libdao "github.com/Loopring/relay-lib/dao"
 	"github.com/Loopring/relay-lib/eth/accessor"
 	lpraccssor "github.com/Loopring/relay-lib/eth/loopringaccessor"
@@ -52,6 +53,7 @@ func LoadConfig(file string) *GlobalConfig {
 		panic(err)
 	}
 
+	println(c.CloudWatch.Enabled, c.CloudWatch.Region)
 	return c
 }
 
@@ -67,7 +69,7 @@ type GlobalConfig struct {
 	Accessor         accessor.AccessorOptions
 	LoopringProtocol lpraccssor.LoopringProtocolOptions
 	Market           util.MarketOptions
-	WatchCloudOpen   bool // default false
+	CloudWatch       cloudwatch.CloudWatchConfig
 }
 
 func Validator(cv reflect.Value) (bool, error) {

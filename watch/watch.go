@@ -29,16 +29,17 @@ const (
 
 var watchOpen bool
 
-func Initialize(open bool) {
-	if !open {
+func Initialize(conf cloudwatch.CloudWatchConfig) {
+	if !conf.Enabled {
+		watchOpen = false
 		return
 	}
 
-	if err := cloudwatch.Initialize(); err != nil {
+	if err := cloudwatch.Initialize(conf); err != nil {
 		log.Fatalf("node start, register cloud watch error:%s", err.Error())
 	}
 
-	watchOpen = open
+	watchOpen = true
 }
 
 func ReportHeartBeat() {

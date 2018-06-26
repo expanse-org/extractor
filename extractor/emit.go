@@ -24,7 +24,6 @@ import (
 	ex "github.com/Loopring/relay-lib/extractor"
 	"github.com/Loopring/relay-lib/kafka"
 	"github.com/Loopring/relay-lib/log"
-	"github.com/Loopring/relay-lib/types"
 	"github.com/Loopring/relay-lib/zklock"
 )
 
@@ -55,16 +54,16 @@ func RegistryEmitter(zkOpt zklock.ZkLockConfig, producerOpt, consumerOpt kafka.K
 	if len(consumerOpt.Brokers) < 1 {
 		return fmt.Errorf("kafka consumer brokers should not be empty")
 	}
+
 	register = &kafka.ConsumerRegister{}
 	register.Initialize(consumerOpt.Brokers)
-	if err := register.RegisterTopicAndHandler(kafka.Kafka_Topic_Extractor_PendingTransaction, kafka.Kafka_Group_Extractor_PendingTransaction, ethtyp.Transaction{}, service.WatchingPendingTransaction); err != nil {
-		return err
-	}
-	if err := register.RegisterTopicAndHandler(kafka.Kafka_Topic_Extractor_AddToken, kafka.Kafka_Group_Extractor_AddToken, types.Token{}, service.WatchingAddToken); err != nil {
-		return err
-	}
+	err := register.RegisterTopicAndHandler(
+		kafka.Kafka_Topic_Extractor_PendingTransaction,
+		kafka.Kafka_Group_Extractor_PendingTransaction,
+		ethtyp.Transaction{},
+		service.WatchingPendingTransaction)
 
-	return nil
+	return err
 }
 
 func UnRegistryEmitter() {
