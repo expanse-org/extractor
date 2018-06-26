@@ -3,6 +3,9 @@ The Loopring Extractor is responsible for maintaining data in the Loopring ecosy
 The extractor relays support for contract events and methods by unpacking Ethereum blocks and transactions
 It is extracted from the transaction and converted to the data type used by the relay. It is then sent to the relay and completed using the kafka message queue.
 
+## Documents in Other Languages
+- [Chinese (中文文档)](chinese.md)
+
 ## Extracting Process
 * Determine the starting block - after the extractor starts, it first determines the starting extractor blockNumber based on the parameters of the configuration file and the block data stored in the database.
 * Get node data - analyze Ethereum node block from the starting block and get the transaction & transactionReceipt in mass.
@@ -35,10 +38,9 @@ extractor --config=your_config_file_path
 
 ## Deploy
 - [reference](https://loopring.github.io/relay-cluster/deploy/deploy_index.html#)
-- [docker](docker)
+- [docker](docker.md)
 
-## Documents in Other Languages
-- [中文文档](chinese)
+
 
 ## Support
 Please visit the official website for contact information and help: https://loopring.org
