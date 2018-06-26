@@ -114,6 +114,7 @@ func (processor *AbiProcessor) SupportedEvents(receipt *ethtyp.TransactionReceip
 		if id == types.NilHash {
 			continue
 		}
+		//todo if evtlog.Address
 		// supported contracts event
 		if _, ok := processor.events[id]; ok {
 			return true
