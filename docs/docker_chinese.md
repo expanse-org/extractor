@@ -1,6 +1,6 @@
 # Loopring Extractor Docker 中文文档
 
-loopring开发团队提供loopring/extractor镜像,最新版本是v1.5.0。<br>
+loopring开发团队提供loopring/extractor镜像,最新版本是v1.5.1<br>
 
 ## 部署
 * 获取docker镜像
@@ -25,6 +25,7 @@ docker run --name extractor -idt -v your_log_path:/opt/loopring/extractor/logs -
 | 版本号         | 描述         |
 |--------------|------------|
 | v1.5.0| release初始版本|
+| v1.5.1| 支持relay钱包用户自定义代币, 变更aws配置|
 
 
 ## 注意事项:

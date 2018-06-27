@@ -1,6 +1,6 @@
 # Loopring Extractor Docker
 
-The loopring development team provides the loopring/extractor image. The latest version is v1.5.0
+The loopring development team provides the loopring/extractor image. The latest version is v1.5.1
 
 ## Run
 get the latest docker image
@@ -25,3 +25,4 @@ docker run --name extractor -idt -v your_log_path:/opt/loopring/extractor/logs -
 | version         | desc         |
 |--------------|------------|
 | v1.5.0| the first release version|
+| v1.5.1| support relay custom tokens, modify aws config options|
