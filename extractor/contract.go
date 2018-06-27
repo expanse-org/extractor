@@ -97,24 +97,14 @@ func (processor *AbiProcessor) GetMethodName(tx *ethtyp.Transaction) string {
 	return contract.METHOD_UNKNOWN
 }
 
-// SupportedEvents supported contract events and unsupported erc20 events
-func (processor *AbiProcessor) SupportedEvents(receipt *ethtyp.TransactionReceipt) bool {
+// HaveSupportedEvents supported contract events and unsupported erc20 events
+func (processor *AbiProcessor) HaveSupportedEvents(receipt *ethtyp.TransactionReceipt) bool {
 	if receipt == nil || len(receipt.Logs) == 0 {
 		return false
 	}
 
 	for _, evtlog := range receipt.Logs {
-		id := evtlog.EventId()
-		if id == types.NilHash {
-			continue
-		}
-		//todo if evtlog.Address
-		// supported contracts event
-		if _, ok := processor.events[id]; ok {
-			return true
-		}
-		// unsupported erc20 contracts event
-		if _, ok := processor.erc20Events[id]; ok {
+		if processor.IsSupportedEvent(&evtlog) {
 			return true
 		}
 	}
@@ -122,19 +112,37 @@ func (processor *AbiProcessor) SupportedEvents(receipt *ethtyp.TransactionReceip
 	return false
 }
 
-// SupportedMethod only supported contracts method
-func (processor *AbiProcessor) SupportedMethod(tx *ethtyp.Transaction) bool {
-	protocol := common.HexToAddress(tx.To)
-	tokens, _ := util.GetAllCustomTokenList()
-	for _, v := range tokens {
-		if v.Address == protocol {
-
-		}
-	}
-
-	if _, ok := processor.protocols[protocol]; !ok {
+// HaveSupportedEvents supported contract events and unsupported erc20 events
+func (processor *AbiProcessor) IsSupportedEvent(evtlog *ethtyp.Log) bool {
+	id := evtlog.EventId()
+	if id == types.NilHash {
 		return false
 	}
+
+	// unsupported contract
+	if !processor.IsContractSupported(common.HexToAddress(evtlog.Address)) {
+		return false
+	}
+
+	// supported impl event
+	if _, implEventIdSupported := processor.events[id]; implEventIdSupported {
+		return true
+	}
+	// supported erc20 event
+	if _, erc20EventIdSupported := processor.erc20Events[id]; erc20EventIdSupported {
+		return true
+	}
+
+	return false
+}
+
+// IsSupportedMethod only supported contracts method
+func (processor *AbiProcessor) IsSupportedMethod(tx *ethtyp.Transaction) bool {
+	protocol := common.HexToAddress(tx.To)
+	if !processor.IsContractSupported(protocol) {
+		return false
+	}
+
 	id := tx.MethodId()
 	if id == "" {
 		return false
@@ -331,15 +339,15 @@ func (processor *AbiProcessor) loadTokenTransferDelegateProtocol() {
 	}
 }
 
-func (processor *AbiProcessor) IsTokenSupported(token common.Address) bool {
-	_, ok := processor.protocols[token]
+func (processor *AbiProcessor) IsContractSupported(protocol common.Address) bool {
+	_, ok := processor.protocols[protocol]
 	return ok
 }
 
 func (processor *AbiProcessor) AddCustomTokens() {
 	tokens, _ := util.GetAllCustomTokenList()
 	for _, v := range tokens {
-		if !processor.IsTokenSupported(v.Address) {
+		if !processor.IsContractSupported(v.Address) {
 			processor.protocols[v.Address] = v.Symbol
 			log.Infof("extractor,contract protocol %s->%s", v.Symbol, v.Address.Hex())
 		}

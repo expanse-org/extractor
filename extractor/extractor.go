@@ -236,7 +236,7 @@ func (l *ExtractorServiceImpl) ProcessPendingTransaction(tx *ethtyp.Transaction)
 
 	blockTime := big.NewInt(time.Now().Unix())
 
-	if l.processor.SupportedMethod(tx) {
+	if l.processor.IsSupportedMethod(tx) {
 		return l.ProcessMethod(tx, nil, blockTime)
 	}
 
@@ -246,11 +246,11 @@ func (l *ExtractorServiceImpl) ProcessPendingTransaction(tx *ethtyp.Transaction)
 func (l *ExtractorServiceImpl) ProcessMinedTransaction(tx *ethtyp.Transaction, receipt *ethtyp.TransactionReceipt, blockTime *big.Int) error {
 	l.debug("extractor,process mined transaction,tx:%s status :%s,logs:%d", tx.Hash, receipt.Status.BigInt().String(), len(receipt.Logs))
 
-	if l.processor.SupportedEvents(receipt) {
+	if l.processor.HaveSupportedEvents(receipt) {
 		return l.ProcessEvent(tx, receipt, blockTime)
 	}
 
-	if l.processor.SupportedMethod(tx) {
+	if l.processor.IsSupportedMethod(tx) {
 		return l.ProcessMethod(tx, receipt, blockTime)
 	}
 
@@ -291,6 +291,10 @@ func (l *ExtractorServiceImpl) ProcessEvent(tx *ethtyp.Transaction, receipt *eth
 		event, ok := l.processor.GetEvent(evtLog)
 		if !ok {
 			l.debug("extractor,process event,tx:%s,unsupported contract event", tx.Hash)
+			continue
+		}
+
+		if !l.processor.IsSupportedEvent(&evtLog) {
 			continue
 		}
 
