@@ -160,6 +160,8 @@ func (accessor *ethNodeAccessor) BatchTransactionRecipients(routeParam string, r
 
 		log.Debugf("accessor,BatchTransactions %d's time to get TransactionReceipt:%s and statusInvalid:%t", repeatCnt, reqs[idx].TxHash, reqs[idx].TxContent.StatusInvalid())
 		_, v.Error = accessor.Call(routeParam, &reqs[idx].TxContent, "eth_getTransactionReceipt", reqs[idx].TxHash)
+		v.Result = reqs[idx].TxContent
+
 		goto mark
 	}
 

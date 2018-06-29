@@ -14,8 +14,10 @@
 package extractor_test
 
 import (
+	"encoding/json"
 	"github.com/Loopring/relay-lib/eth/abi"
 	"github.com/Loopring/relay-lib/eth/contract"
+	ethtyp "github.com/Loopring/relay-lib/eth/types"
 	"github.com/Loopring/relay-lib/types"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -387,4 +389,16 @@ func safeBig(input string) *big.Int {
 		num.Not(num)
 	}
 	return num
+}
+
+func TestTxReceipt(t *testing.T) {
+	receipt := &ethtyp.TransactionReceipt{}
+	if receipt.Status == nil {
+		t.Log("it is nil")
+	}
+	bs, err := json.Marshal(receipt)
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
+	t.Log(string(bs))
 }
