@@ -232,7 +232,7 @@ func (l *ExtractorServiceImpl) ProcessBlock() error {
 }
 
 func (l *ExtractorServiceImpl) ProcessPendingTransaction(tx *ethtyp.Transaction) error {
-	log.Debugf("extractor,process pending transaction %s", tx.Hash)
+	log.Debugf("extractor,process pending transaction:%s, input:%s", tx.Hash, tx.Input)
 
 	blockTime := big.NewInt(time.Now().Unix())
 
