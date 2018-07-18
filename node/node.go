@@ -49,8 +49,8 @@ func NewNode(logger *zap.Logger, globalConfig *GlobalConfig) *Node {
 	n.registerMysql()
 	n.registerMarketUtil()
 	n.registerAccessor()
-	n.registerEmitter()
 	n.registerExtractor()
+	n.registerEmitter()
 	n.registerCloudWatch()
 
 	return n
@@ -97,8 +97,14 @@ func (n *Node) registerExtractor() {
 }
 
 func (n *Node) registerEmitter() {
-	if err := extractor.RegistryEmitter(n.globalConfig.ZkLock, n.globalConfig.Kafka, n.globalConfig.Kafka, n.extractor); err != nil {
+	if err := extractor.RegistryEmitter(n.globalConfig.Kafka, n.globalConfig.Kafka, n.extractor); err != nil {
 		log.Fatalf("node start, register emitter error:%s", err.Error())
+	}
+}
+
+func (n *Node) registerZkLock() {
+	if err := extractor.RegistryZkLock(n.globalConfig.ZkLock); err != nil {
+		log.Fatalf("node start, register zklock error:%s", err.Error())
 	}
 }
 

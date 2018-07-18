@@ -37,14 +37,7 @@ var (
 	register *kafka.ConsumerRegister
 )
 
-func RegistryEmitter(zkOpt zklock.ZkLockConfig, producerOpt, consumerOpt kafka.KafkaOptions, service ExtractorService) error {
-	if _, err := zklock.Initialize(zkOpt); err != nil {
-		return err
-	}
-	if err := zklock.TryLock(ZKNAME_EXTRACTOR); err != nil {
-		return err
-	}
-
+func RegistryEmitter(producerOpt, consumerOpt kafka.KafkaOptions, service ExtractorService) error {
 	brokers := producerOpt.Brokers
 	producer = &kafka.MessageProducer{}
 	if err := producer.Initialize(brokers); err != nil {
