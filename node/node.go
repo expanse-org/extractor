@@ -49,6 +49,7 @@ func NewNode(logger *zap.Logger, globalConfig *GlobalConfig) *Node {
 	n.registerMysql()
 	n.registerMarketUtil()
 	n.registerAccessor()
+	n.registerZkLock()
 	n.registerExtractor()
 	n.registerEmitter()
 	n.registerCloudWatch()
