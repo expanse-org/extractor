@@ -20,9 +20,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/Loopring/extractor/node"
-	"github.com/Loopring/relay-lib/log"
-	"github.com/Loopring/relay-lib/params"
+	"github.com/expanse-org/extractor/node"
+	"github.com/expanse-org/relay-lib/log"
+	"github.com/expanse-org/relay-lib/params"
 	"gopkg.in/urfave/cli.v1"
 	"os"
 	"os/signal"

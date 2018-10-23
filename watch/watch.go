@@ -19,8 +19,8 @@
 package watch
 
 import (
-	"github.com/Loopring/relay-lib/cloudwatch"
-	"github.com/Loopring/relay-lib/log"
+	"github.com/expanse-org/relay-lib/cloudwatch"
+	"github.com/expanse-org/relay-lib/log"
 )
 
 const (

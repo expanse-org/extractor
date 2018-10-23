@@ -20,11 +20,11 @@ package extractor
 
 import (
 	"fmt"
-	"github.com/Loopring/extractor/dao"
-	"github.com/Loopring/relay-lib/eth/accessor"
-	ethtyp "github.com/Loopring/relay-lib/eth/types"
-	"github.com/Loopring/relay-lib/log"
-	"github.com/Loopring/relay-lib/types"
+	"github.com/expanse-org/extractor/dao"
+	"github.com/expanse-org/relay-lib/eth/accessor"
+	ethtyp "github.com/expanse-org/relay-lib/eth/types"
+	"github.com/expanse-org/relay-lib/log"
+	"github.com/expanse-org/relay-lib/types"
 	"math/big"
 )
 

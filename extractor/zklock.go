@@ -18,7 +18,7 @@
 
 package extractor
 
-import "github.com/Loopring/relay-lib/zklock"
+import "github.com/expanse-org/relay-lib/zklock"
 
 func RegistryZkLock(zkOpt zklock.ZkLockConfig) error {
 	if _, err := zklock.Initialize(zkOpt); err != nil {

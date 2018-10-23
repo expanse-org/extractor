@@ -27,7 +27,7 @@ Loopring Extractor(解析器)，在路印生态系统中负责维护链上数据
 ## 快速开始
 从github上拉取代码后,运行
 ```bash
-cd $GOPATH/src/github.com/Loopring/extractor
+cd $GOPATH/src/github.com/expanse-org/extractor
 go build -ldflags -s -v  -o build/bin/extractor cmd/main.go
 ```
 将在项目build/bin目录下生成extractor可执行文件
