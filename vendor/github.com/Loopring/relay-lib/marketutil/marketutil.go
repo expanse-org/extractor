@@ -41,7 +41,7 @@ type TokenPair struct {
 	TokenB common.Address
 }
 
-var MarketBaseOrder = map[string]uint8{"BAR": 5, "LRC": 10, "WETH": 20, "DAI": 30}
+var MarketBaseOrder = map[string]uint8{"BAR": 5, "LRC": 10, "WEXP": 20, "DAI": 30}
 
 type TokenStandard uint8
 
@@ -252,7 +252,7 @@ func TokenUnRegister(input eventemitter.EventData) error {
 }
 
 func WethTokenAddress() common.Address {
-	return AllTokens["WETH"].Protocol
+	return AllTokens["WEXP"].Protocol
 }
 
 func WrapMarket(s, b string) (market string, err error) {
