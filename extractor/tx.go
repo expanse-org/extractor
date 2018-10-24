@@ -19,11 +19,11 @@
 package extractor
 
 import (
-	"github.com/Loopring/relay-lib/eth/contract"
-	"github.com/Loopring/relay-lib/eth/loopringaccessor"
-	ethtyp "github.com/Loopring/relay-lib/eth/types"
-	//"github.com/Loopring/relay-lib/log"
-	"github.com/Loopring/relay-lib/types"
+	"github.com/expanse-org/relay-lib/eth/contract"
+	"github.com/expanse-org/relay-lib/eth/loopringaccessor"
+	ethtyp "github.com/expanse-org/relay-lib/eth/types"
+	//"github.com/expanse-org/relay-lib/log"
+	"github.com/expanse-org/relay-lib/types"
 	"github.com/ethereum/go-ethereum/common"
 	"math/big"
 )

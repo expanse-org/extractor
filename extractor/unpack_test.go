@@ -14,9 +14,9 @@
 package extractor_test
 
 import (
-	"github.com/Loopring/relay-lib/eth/abi"
-	"github.com/Loopring/relay-lib/eth/contract"
-	"github.com/Loopring/relay-lib/types"
+	"github.com/expanse-org/relay-lib/eth/abi"
+	"github.com/expanse-org/relay-lib/eth/contract"
+	"github.com/expanse-org/relay-lib/types"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"math/big"

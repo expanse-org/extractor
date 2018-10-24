@@ -20,11 +20,11 @@ package extractor
 
 import (
 	"fmt"
-	ethtyp "github.com/Loopring/relay-lib/eth/types"
-	ex "github.com/Loopring/relay-lib/extractor"
-	"github.com/Loopring/relay-lib/kafka"
-	"github.com/Loopring/relay-lib/log"
-	"github.com/Loopring/relay-lib/zklock"
+	ethtyp "github.com/expanse-org/relay-lib/eth/types"
+	ex "github.com/expanse-org/relay-lib/extractor"
+	"github.com/expanse-org/relay-lib/kafka"
+	"github.com/expanse-org/relay-lib/log"
+	"github.com/expanse-org/relay-lib/zklock"
 )
 
 const (
