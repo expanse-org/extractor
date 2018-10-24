@@ -177,8 +177,8 @@ func Erc20Abi() *abi.ABI {
 	return loopringParams.Erc20Abi
 }
 
-func WethAbi() *abi.ABI {
-	return loopringParams.WethAbi
+func WexpAbi() *abi.ABI {
+	return loopringParams.WexpAbi
 }
 
 func TokenRegistryAbi() *abi.ABI {

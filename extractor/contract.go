@@ -49,7 +49,7 @@ func newAbiProcessor() *AbiProcessor {
 
 	processor.loadProtocolAddress()
 	processor.loadErc20Contract()
-	processor.loadWethContract()
+	processor.loadWexpContract()
 	processor.loadProtocolContract()
 	processor.loadTokenRegisterContract()
 	processor.loadTokenTransferDelegateProtocol()
@@ -261,37 +261,37 @@ func (processor *AbiProcessor) loadErc20Contract() {
 	}
 }
 
-func (processor *AbiProcessor) loadWethContract() {
-	for name, method := range lpraccessor.WethAbi().Methods {
-		if name != contract.METHOD_WETH_DEPOSIT && name != contract.METHOD_WETH_WITHDRAWAL {
+func (processor *AbiProcessor) loadWexpContract() {
+	for name, method := range lpraccessor.WexpAbi().Methods {
+		if name != contract.METHOD_WEXP_DEPOSIT && name != contract.METHOD_WEXP_WITHDRAWAL {
 			continue
 		}
 
-		methodData := newMethodData(&method, lpraccessor.WethAbi())
+		methodData := newMethodData(&method, lpraccessor.WexpAbi())
 
 		switch methodData.Name {
-		case contract.METHOD_WETH_DEPOSIT:
-			methodData.Method = &contract.WethDepositMethod{}
-		case contract.METHOD_WETH_WITHDRAWAL:
-			methodData.Method = &contract.WethWithdrawalMethod{}
+		case contract.METHOD_WEXP_DEPOSIT:
+			methodData.Method = &contract.WexpDepositMethod{}
+		case contract.METHOD_WEXP_WITHDRAWAL:
+			methodData.Method = &contract.WexpWithdrawalMethod{}
 		}
 
 		processor.methods[methodData.Id] = methodData
 		log.Infof("extractor,contract method name:%s -> key:%s", methodData.Name, methodData.Id)
 	}
 
-	for name, event := range lpraccessor.WethAbi().Events {
-		if name != contract.EVENT_WETH_DEPOSIT && name != contract.EVENT_WETH_WITHDRAWAL {
+	for name, event := range lpraccessor.WexpAbi().Events {
+		if name != contract.EVENT_WEXP_DEPOSIT && name != contract.EVENT_WEXP_WITHDRAWAL {
 			continue
 		}
 
-		eventData := newEventData(&event, lpraccessor.WethAbi())
+		eventData := newEventData(&event, lpraccessor.WexpAbi())
 
 		switch eventData.Name {
-		case contract.EVENT_WETH_DEPOSIT:
-			eventData.Event = &contract.WethDepositEvent{}
-		case contract.EVENT_WETH_WITHDRAWAL:
-			eventData.Event = &contract.WethWithdrawalEvent{}
+		case contract.EVENT_WEXP_DEPOSIT:
+			eventData.Event = &contract.WexpDepositEvent{}
+		case contract.EVENT_WEXP_WITHDRAWAL:
+			eventData.Event = &contract.WexpWithdrawalEvent{}
 		}
 
 		processor.events[eventData.Id] = eventData

@@ -53,7 +53,7 @@ func (m *MethodData) handleMethod(tx *ethtyp.Transaction, gasUsed, blockTime *bi
 	if err := m.beforeUnpack(tx, gasUsed, blockTime, status, methodName); err != nil {
 		return err
 	}
-	if m.Name != contract.METHOD_WETH_DEPOSIT {
+	if m.Name != contract.METHOD_WEXP_DEPOSIT {
 		if err := m.unpack(tx); err != nil {
 			return err
 		}
@@ -112,9 +112,9 @@ func (m *MethodData) afterUnpack() error {
 		event, err = m.getApproveEvent()
 	case contract.METHOD_TRANSFER:
 		event, err = m.getTransferEvent()
-	case contract.METHOD_WETH_DEPOSIT:
+	case contract.METHOD_WEXP_DEPOSIT:
 		event, err = m.getDepositEvent()
-	case contract.METHOD_WETH_WITHDRAWAL:
+	case contract.METHOD_WEXP_WITHDRAWAL:
 		event, err = m.getWithdrawalEvent()
 	}
 
@@ -232,27 +232,27 @@ func (m *MethodData) getTransferEvent() (*types.TransferEvent, error) {
 	return event, nil
 }
 
-func (m *MethodData) getDepositEvent() (*types.WethDepositEvent, error) {
-	event := &types.WethDepositEvent{}
+func (m *MethodData) getDepositEvent() (*types.WexpDepositEvent, error) {
+	event := &types.WexpDepositEvent{}
 	event.Dst = m.From
 	event.Amount = m.Value
 	event.TxInfo = m.TxInfo
 
-	//log.Debugf("extractor,tx:%s wethDeposit method to:%s, value:%s", event.TxHash.Hex(), event.Dst.Hex(), event.Amount.String())
+	//log.Debugf("extractor,tx:%s wexpDeposit method to:%s, value:%s", event.TxHash.Hex(), event.Dst.Hex(), event.Amount.String())
 
 	return event, nil
 }
 
-func (m *MethodData) getWithdrawalEvent() (*types.WethWithdrawalEvent, error) {
-	src, ok := m.Method.(*contract.WethWithdrawalMethod)
+func (m *MethodData) getWithdrawalEvent() (*types.WexpWithdrawalEvent, error) {
+	src, ok := m.Method.(*contract.WexpWithdrawalMethod)
 	if !ok {
-		return nil, fmt.Errorf("wethWithdrawal method inputs type error")
+		return nil, fmt.Errorf("wexpWithdrawal method inputs type error")
 	}
 
 	event := src.ConvertDown(m.From)
 	event.TxInfo = m.TxInfo
 
-	//log.Debugf("extractor,tx:%s wethWithdrawal method from:%s, value:%s", event.TxHash.Hex(), event.Src.Hex(), event.Amount.String())
+	//log.Debugf("extractor,tx:%s wexpWithdrawal method from:%s, value:%s", event.TxHash.Hex(), event.Src.Hex(), event.Amount.String())
 
 	return event, nil
 }

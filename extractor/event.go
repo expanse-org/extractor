@@ -109,9 +109,9 @@ func (e *EventData) afterUnpack() error {
 		event, err = e.getTransferEvent()
 	case contract.EVENT_APPROVAL:
 		event, err = e.getApprovalEvent()
-	case contract.EVENT_WETH_DEPOSIT:
+	case contract.EVENT_WEXP_DEPOSIT:
 		event, err = e.getDepositEvent()
-	case contract.EVENT_WETH_WITHDRAWAL:
+	case contract.EVENT_WEXP_WITHDRAWAL:
 		event, err = e.getWithdrawalEvent()
 	case contract.EVENT_TOKEN_REGISTERED:
 		event, err = e.getTokenRegisteredEvent()
@@ -202,24 +202,24 @@ func (e *EventData) getApprovalEvent() (*types.ApprovalEvent, error) {
 	return event, nil
 }
 
-func (e *EventData) getDepositEvent() (*types.WethDepositEvent, error) {
-	src := e.Event.(*contract.WethDepositEvent)
+func (e *EventData) getDepositEvent() (*types.WexpDepositEvent, error) {
+	src := e.Event.(*contract.WexpDepositEvent)
 
 	event := src.ConvertDown()
 	event.TxInfo = e.TxInfo
 
-	//log.Debugf("extractor,tx:%s wethDeposit event deposit to:%s, number:%s", event.TxHash.Hex(), event.Dst.Hex(), event.Amount.String())
+	//log.Debugf("extractor,tx:%s wexpDeposit event deposit to:%s, number:%s", event.TxHash.Hex(), event.Dst.Hex(), event.Amount.String())
 
 	return event, nil
 }
 
-func (e *EventData) getWithdrawalEvent() (*types.WethWithdrawalEvent, error) {
-	src := e.Event.(*contract.WethWithdrawalEvent)
+func (e *EventData) getWithdrawalEvent() (*types.WexpWithdrawalEvent, error) {
+	src := e.Event.(*contract.WexpWithdrawalEvent)
 
 	event := src.ConvertDown()
 	event.TxInfo = e.TxInfo
 
-	//log.Debugf("extractor,tx:%s wethWithdrawal event withdrawal from:%s, number:%s", event.TxHash.Hex(), event.Src.Hex(), event.Amount.String())
+	//log.Debugf("extractor,tx:%s wexpWithdrawal event withdrawal from:%s, number:%s", event.TxHash.Hex(), event.Src.Hex(), event.Amount.String())
 
 	return event, nil
 }

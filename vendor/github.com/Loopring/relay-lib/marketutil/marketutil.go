@@ -65,7 +65,7 @@ var (
 
 type MarketOptions struct {
 	TokenFile             string
-	OldVersionWethAddress string
+	OldVersionWexpAddress string
 }
 
 func StartRefreshCron(option *MarketOptions) {
@@ -251,7 +251,7 @@ func TokenUnRegister(input eventemitter.EventData) error {
 	return nil
 }
 
-func WethTokenAddress() common.Address {
+func WexpTokenAddress() common.Address {
 	return AllTokens["WEXP"].Protocol
 }
 
