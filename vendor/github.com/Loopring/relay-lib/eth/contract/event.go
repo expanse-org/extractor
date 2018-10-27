@@ -20,9 +20,10 @@ package contract
 
 import (
 	"errors"
-	"github.com/expanse-org/relay-lib/types"
-	"github.com/ethereum/go-ethereum/common"
 	"math/big"
+
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/expanse-org/relay-lib/types"
 )
 
 const (
@@ -72,7 +73,7 @@ func (e *ApprovalEvent) ConvertDown() *types.ApprovalEvent {
 
 /// @dev Event to emit if a ring is successfully mined.
 /// _amountsList is an array of:
-/// [_amountS, _amountB, _lrcReward, _lrcFee, splitS, splitB].
+/// [_amountS, _amountB, _pexReward, _pexFee, splitS, splitB].
 //event RingMined(
 //uint            _ringIndex,
 //bytes32 indexed _ringHash,
@@ -85,9 +86,9 @@ func (e *ApprovalEvent) ConvertDown() *types.ApprovalEvent {
 //orderInfoList[q++] = bytes32(state.owner);
 //orderInfoList[q++] = bytes32(state.tokenS);
 //orderInfoList[q++] = bytes32(state.fillAmountS);
-//orderInfoList[q++] = bytes32(state.lrcReward);
+//orderInfoList[q++] = bytes32(state.pexReward);
 //orderInfoList[q++] = bytes32(
-//state.lrcFeeState > 0 ? int(state.lrcFeeState) : -int(state.lrcReward)
+//state.pexFeeState > 0 ? int(state.pexFeeState) : -int(state.pexReward)
 //);
 //orderInfoList[q++] = bytes32(
 //state.splitS > 0 ? int(state.splitS) : -int(state.splitB)
@@ -169,9 +170,9 @@ func (e *RingMinedEvent) ConvertDown() (*types.RingMinedEvent, []*types.OrderFil
 		fill.AmountB = amountB
 		fill.LrcReward = safeBig(e.OrderInfoList[start+4])
 
-		// lrcFee or lrcReward, if >= 0 lrcFee, else lrcReward
-		if lrcFeeOrReward := safeBig(e.OrderInfoList[start+5]); lrcFeeOrReward.Cmp(big.NewInt(0)) > 0 {
-			fill.LrcFee = lrcFeeOrReward
+		// pexFee or pexReward, if >= 0 pexFee, else pexReward
+		if pexFeeOrReward := safeBig(e.OrderInfoList[start+5]); pexFeeOrReward.Cmp(big.NewInt(0)) > 0 {
+			fill.LrcFee = pexFeeOrReward
 		} else {
 			fill.LrcFee = big.NewInt(0)
 		}

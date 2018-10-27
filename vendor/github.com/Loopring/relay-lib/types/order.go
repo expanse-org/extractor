@@ -19,11 +19,12 @@
 package types
 
 import (
-	"github.com/expanse-org/relay-lib/crypto"
-	"github.com/expanse-org/relay-lib/log"
-	"github.com/ethereum/go-ethereum/common"
 	"math/big"
 	"time"
+
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/expanse-org/relay-lib/crypto"
+	"github.com/expanse-org/relay-lib/log"
 )
 
 type OrderStatus uint8
@@ -62,7 +63,7 @@ type Order struct {
 	AmountB               *big.Int                   `json:"amountB" gencodec:"required"`    // 买入erc20代币数量上限
 	ValidSince            *big.Int                   `json:"validSince" gencodec:"required"` //
 	ValidUntil            *big.Int                   `json:"validUntil" gencodec:"required"` // 订单过期时间
-	LrcFee                *big.Int                   `json:"lrcFee" `                        // 交易总费用,部分成交的费用按该次撮合实际卖出代币额与比例计算
+	LrcFee                *big.Int                   `json:"pexFee" `                        // 交易总费用,部分成交的费用按该次撮合实际卖出代币额与比例计算
 	BuyNoMoreThanAmountB  bool                       `json:"buyNoMoreThanAmountB" gencodec:"required"`
 	MarginSplitPercentage uint8                      `json:"marginSplitPercentage" gencodec:"required"` // 不为0时支付给交易所的分润比例，否则视为100%
 	V                     uint8                      `json:"v" gencodec:"required"`
@@ -100,7 +101,7 @@ type OrderJsonRequest struct {
 	ValidSince      *big.Int                   `json:"validSince" gencodec:"required"` //
 	ValidUntil      *big.Int                   `json:"validUntil" gencodec:"required"` // 订单过期时间
 	// Salt                  int64          `json:"salt" gencodec:"required"`
-	LrcFee                *big.Int       `json:"lrcFee" ` // 交易总费用,部分成交的费用按该次撮合实际卖出代币额与比例计算
+	LrcFee                *big.Int       `json:"pexFee" ` // 交易总费用,部分成交的费用按该次撮合实际卖出代币额与比例计算
 	BuyNoMoreThanAmountB  bool           `json:"buyNoMoreThanAmountB" gencodec:"required"`
 	MarginSplitPercentage uint8          `json:"marginSplitPercentage" gencodec:"required"` // 不为0时支付给交易所的分润比例，否则视为100%
 	V                     uint8          `json:"v" gencodec:"required"`
@@ -195,15 +196,15 @@ func (o *Order) GeneratePrice() {
 //RateAmountS、FeeSelection 需要提交到contract
 type FilledOrder struct {
 	OrderState       OrderState `json:"orderState" gencodec:"required"`
-	FeeSelection     uint8      `json:"feeSelection"`     //0 -> lrc
+	FeeSelection     uint8      `json:"feeSelection"`     //0 -> pex
 	RateAmountS      *big.Rat   `json:"rateAmountS"`      //提交需要
 	AvailableAmountS *big.Rat   `json:"availableAmountS"` //需要，也是用于计算fee
 	AvailableAmountB *big.Rat   //需要，也是用于计算fee
 	FillAmountS      *big.Rat   `json:"fillAmountS"`
 	FillAmountB      *big.Rat   `json:"fillAmountB"` //计算需要
-	LrcReward        *big.Rat   `json:"lrcReward"`
-	LrcFee           *big.Rat   `json:"lrcFee"`
-	LegalLrcFee      *big.Rat   `json:"legalLrcFee"`
+	PexReward        *big.Rat   `json:"pexReward"`
+	PexFee           *big.Rat   `json:"pexFee"`
+	LegalPexFee      *big.Rat   `json:"legalPexFee"`
 	FeeS             *big.Rat   `json:"feeS"`
 	LegalFeeS        *big.Rat   `json:"legalFeeS"`
 	LegalFee         *big.Rat   `json:"legalFee"` //法币计算的fee
@@ -215,10 +216,10 @@ type FilledOrder struct {
 	AvailableTokenSBalance *big.Rat
 }
 
-func ConvertOrderStateToFilledOrder(orderState OrderState, lrcBalance, tokenSBalance *big.Rat, lrcAddress common.Address) *FilledOrder {
+func ConvertOrderStateToFilledOrder(orderState OrderState, pexBalance, tokenSBalance *big.Rat, pexAddress common.Address) *FilledOrder {
 	filledOrder := &FilledOrder{}
 	filledOrder.OrderState = orderState
-	filledOrder.AvailableLrcBalance = new(big.Rat).Set(lrcBalance)
+	filledOrder.AvailableLrcBalance = new(big.Rat).Set(pexBalance)
 	filledOrder.AvailableTokenSBalance = new(big.Rat).Set(tokenSBalance)
 
 	filledOrder.AvailableAmountS, filledOrder.AvailableAmountB = filledOrder.OrderState.RemainedAmount()
@@ -235,7 +236,7 @@ func ConvertOrderStateToFilledOrder(orderState OrderState, lrcBalance, tokenSBal
 		filledOrder.AvailableAmountB.Mul(filledOrder.AvailableAmountS, new(big.Rat).Inv(sellPrice))
 	}
 
-	if orderState.RawOrder.TokenB == lrcAddress && lrcBalance.Cmp(filledOrder.AvailableAmountB) < 0 {
+	if orderState.RawOrder.TokenB == pexAddress && pexBalance.Cmp(filledOrder.AvailableAmountB) < 0 {
 		filledOrder.AvailableLrcBalance.Set(filledOrder.AvailableAmountB)
 	}
 	return filledOrder

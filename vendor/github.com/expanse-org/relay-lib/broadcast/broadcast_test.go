@@ -71,7 +71,7 @@ func TestPubOrder(t *testing.T) {
 "authAddr":"0x90feb7c492db20afce48e830cc0c6bea1b6721dd",
 "authPrivateKey":"acfe437a8e0f65124c44647737c0471b8adc9a0763f139df76766f46d6af8e15",
 "amountB":"0x56bc75e2d63100000","amountS":"0x16345785d8a0000",
-"lrcFee":"0xad78ebc5ac6200000",
+"pexFee":"0xad78ebc5ac6200000",
 "validSince":"0x5aa104a5",
 "validUntil":"0x5ac891a5",
 "marginSplitPercentage":35,"buyNoMoreThanAmountB":true,"walletId":"0x1","v":27,

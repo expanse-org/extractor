@@ -20,6 +20,11 @@ package extractor
 
 import (
 	"fmt"
+	"math/big"
+	"sort"
+	"sync"
+	"time"
+
 	"github.com/expanse-org/extractor/dao"
 	"github.com/expanse-org/extractor/watch"
 	"github.com/expanse-org/relay-lib/eth/accessor"
@@ -27,10 +32,6 @@ import (
 	ethtyp "github.com/expanse-org/relay-lib/eth/types"
 	"github.com/expanse-org/relay-lib/log"
 	"github.com/expanse-org/relay-lib/types"
-	"math/big"
-	"sort"
-	"sync"
-	"time"
 )
 
 /**
