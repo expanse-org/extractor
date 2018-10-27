@@ -64,7 +64,7 @@ owner = "Loopring corporation"
          "v1.5.1" = "0xa33f039cb441eba250bf3b8da25c21ce6ac10d49"
 
 [market]
-    token_file = "config/tokens.json"
+    token_file = "./config/tokens.json"
 
 [zk_lock]
     zk_servers = "172.31.37.241:2181"
