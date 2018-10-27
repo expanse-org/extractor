@@ -42,7 +42,7 @@ type ProtocolAddress struct {
 	Version         string
 	ContractAddress common.Address
 
-	LrcTokenAddress common.Address
+	PexTokenAddress common.Address
 
 	TokenRegistryAddress common.Address
 

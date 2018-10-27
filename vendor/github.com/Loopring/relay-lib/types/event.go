@@ -136,8 +136,8 @@ type OrderFilledEvent struct {
 	RingIndex     *big.Int       `json:"ring_index"`
 	AmountS       *big.Int       `json:"amount_s"`
 	AmountB       *big.Int       `json:"amount_b"`
-	LrcReward     *big.Int       `json:"lrc_reward"`
-	LrcFee        *big.Int       `json:"lrc_fee"`
+	PexReward     *big.Int       `json:"pex_reward"`
+	PexFee        *big.Int       `json:"pex_fee"`
 	SplitS        *big.Int       `json:"split_s"`
 	SplitB        *big.Int       `json:"split_b"`
 	Market        string         `json:"market"`
@@ -169,7 +169,7 @@ type CutoffPairEvent struct {
 type RingMinedEvent struct {
 	TxInfo
 	RingIndex    *big.Int       `json:"ring_index"`
-	TotalLrcFee  *big.Int       `json:"total_lrc_fee"`
+	TotalPexFee  *big.Int       `json:"total_pex_fee"`
 	TradeAmount  int            `json:"trade_amount"`
 	Ringhash     common.Hash    `json:"ringhash"`
 	Miner        common.Address `json:"miner"`

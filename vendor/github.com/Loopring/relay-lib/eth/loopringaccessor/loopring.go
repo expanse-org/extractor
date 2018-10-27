@@ -80,11 +80,11 @@ func Initialize(options LoopringProtocolOptions) error {
 		impl := &ProtocolAddress{Version: version, ContractAddress: common.HexToAddress(address)}
 		callMethod := accessor.ContractCallMethod(loopringParams.ProtocolImplAbi, impl.ContractAddress)
 		var addr string
-		if err := callMethod(&addr, "lrcTokenAddress", "latest"); nil != err {
+		if err := callMethod(&addr, "pexTokenAddress", "latest"); nil != err {
 			return err
 		} else {
-			log.Debugf("version:%s, contract:%s, lrcTokenAddress:%s", version, address, addr)
-			impl.LrcTokenAddress = common.HexToAddress(addr)
+			log.Debugf("version:%s, contract:%s, pexTokenAddress:%s", version, address, addr)
+			impl.PexTokenAddress = common.HexToAddress(addr)
 		}
 		if err := callMethod(&addr, "tokenRegistryAddress", "latest"); nil != err {
 			return err
