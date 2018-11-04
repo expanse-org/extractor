@@ -6,3 +6,5 @@ The Loopring Extractor is responsible for maintaining data in the Loopring ecosy
 
 ### Documentations
 For more information regarding this project, please checkout its [github pages](https://loopring.github.io/extractor).
+
+### Use `Latest` branch
